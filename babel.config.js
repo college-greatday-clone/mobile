@@ -1,6 +1,8 @@
 module.exports = {
 	presets: ['module:@react-native/babel-preset'],
 	plugins: [
+		'nativewind/babel',
+		'module:react-native-dotenv',
 		[
 			'module-resolver',
 			{
@@ -19,7 +21,11 @@ module.exports = {
 					'.json',
 					'.tsx',
 					'.ts',
-					'.native.js'
+					'.native.js',
+					'.svg',
+					'.jpeg',
+					'.jpg',
+					'.png'
 				]
 			}
 		]

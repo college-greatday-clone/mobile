@@ -32,6 +32,14 @@
 		"__mocks__"
 	],
 	"rules": {
+		"@typescript-eslint/no-unused-vars": "error",
+		"prettier/prettier": [
+			"error",
+			{
+				"endOfLine": "auto"
+			}
+		],
+
 		// JSX
 		"react/react-in-jsx-scope": "off",
 
