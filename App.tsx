@@ -23,19 +23,24 @@ import { store, persistor } from '@/plugins/redux'
 import { GluestackUIProvider } from '@gluestack-ui/themed'
 import { config } from '@/plugins/glue-stack'
 
+// React Native Confirm Toast
+import { Root as PopupRootProvider } from 'react-native-popup-confirm-toast'
+
 const App = memo(() => {
 	return (
-		<GluestackUIProvider config={config}>
-			<Provider store={store}>
-				<PersistGate loading={null} persistor={persistor}>
-					<SafeAreaProvider>
-						<NavigationContainer>
-							<EntryPoint />
-						</NavigationContainer>
-					</SafeAreaProvider>
-				</PersistGate>
-			</Provider>
-		</GluestackUIProvider>
+		<PopupRootProvider>
+			<GluestackUIProvider config={config}>
+				<Provider store={store}>
+					<PersistGate loading={null} persistor={persistor}>
+						<SafeAreaProvider>
+							<NavigationContainer>
+								<EntryPoint />
+							</NavigationContainer>
+						</SafeAreaProvider>
+					</PersistGate>
+				</Provider>
+			</GluestackUIProvider>
+		</PopupRootProvider>
 	)
 })
 

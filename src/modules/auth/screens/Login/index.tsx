@@ -21,10 +21,15 @@ import { FormInput, FormSelect } from '@/modules/app/components'
 
 // Types
 import { TAuthLoginForm } from '@/modules/auth/types/auth.type'
+import { TAuthLoginScreenProps } from '@/modules/auth/screens/Login/types'
 
 // Constants
 import { AUTH_LOGIN_FORM } from '@/modules/auth/constants/auth.constant'
 import { BaseButton } from '@/modules/app/components/base'
+import { EAuthStackNavigation } from '@/modules/app/constants/navigation.constant.ts'
+
+// React Navigation
+import { useNavigation } from '@react-navigation/native'
 
 const schemaValidation = yup
 	.object({
@@ -41,6 +46,7 @@ const AuthLoginScreen = memo(() => {
 		mode: 'all'
 	})
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+	const navigation = useNavigation<TAuthLoginScreenProps>()
 
 	return (
 		<SafeAreaView className='flex-1 bg-white'>
@@ -131,7 +137,16 @@ const AuthLoginScreen = memo(() => {
 							</Text>
 						</View>
 
-						<BaseButton button={{ backgroundColor: '$primary400' }}>
+						<BaseButton
+							button={{
+								backgroundColor: '$primary400',
+								onPress: () => {
+									navigation.navigate(
+										EAuthStackNavigation.AUTH_REGISTER_COMPANY
+									)
+								}
+							}}
+						>
 							Register Here
 						</BaseButton>
 					</View>

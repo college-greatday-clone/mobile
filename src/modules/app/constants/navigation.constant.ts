@@ -4,5 +4,6 @@ export enum EAppStackNavigation {
 }
 
 export enum EAuthStackNavigation {
-	AUTH_LOGIN = 'AuthLogin'
+	AUTH_LOGIN = 'AuthLogin',
+	AUTH_REGISTER_COMPANY = 'AuthRegisterCompany'
 }
