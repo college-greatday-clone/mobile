@@ -30,7 +30,8 @@ const FormSelect = memo(
 		value,
 		placeholder,
 		emptyItemPlaceholder,
-		error
+		error,
+		variant
 	}: TFormSelectProps) => {
 		return (
 			<>
@@ -39,7 +40,7 @@ const FormSelect = memo(
 					selectedValue={value}
 					isInvalid={error !== undefined}
 				>
-					<SelectTrigger variant='underlined' size='md'>
+					<SelectTrigger variant={variant || 'underlined'} size='md'>
 						<SelectInput placeholder={placeholder || 'Select Option'} />
 						<SelectIcon>
 							<Icon as={ChevronDownIcon} />

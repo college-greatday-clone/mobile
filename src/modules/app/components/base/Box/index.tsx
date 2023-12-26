@@ -10,7 +10,7 @@ import { TBaseBoxProps } from './types'
 const BaseBox = memo(({ children, ...rest }: TBaseBoxProps) => {
 	return (
 		<View
-			className={`rounded-[8px] bg-white pb-4 pt-3 pl-2 pr-4 shadow-md border border-[#ebebeb] ${rest?.className}`}
+			className={`rounded-[8px] bg-white pb-4 pt-3 pl-2 pr-4 shadow-xl border border-[#ebebeb] ${rest?.className}`}
 			{...rest}
 		>
 			{children}

@@ -8,4 +8,5 @@ export type TFormSelectProps = {
 	placeholder?: string
 	emptyItemPlaceholder?: string
 	error?: FieldError
+	variant?: string
 }
