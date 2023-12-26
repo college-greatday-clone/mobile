@@ -39,3 +39,7 @@ export enum EReportStackNavigation {
 export enum EOfficerStackNavigation {
 	INDEX = 'OfficerIndex'
 }
+
+export enum ENotificationStackNavigation {
+	INDEX = 'NotificationIndex'
+}

@@ -10,6 +10,7 @@ import { EmployeeStackNavigation } from '@/modules/employee/navigations'
 import { HomeStackNavigation } from '@/modules/home/navigations'
 import { ReportStackNavigation } from '@/modules/report/navigations'
 import { OfficerStackNavigation } from '@/modules/officer/navigations'
+import { NotificationStackNavigation } from '@/modules/notification/navigations'
 
 // Constants
 import { EAppBottomTabNavigation } from '@/modules/app/constants/navigation.constant'
@@ -38,6 +39,10 @@ const AppRootBottomTabNavigation = () => {
 			<Tab.Screen
 				name={EAppBottomTabNavigation.HOME}
 				component={HomeStackNavigation}
+			/>
+			<Tab.Screen
+				name={EAppBottomTabNavigation.NOTIFICATION}
+				component={NotificationStackNavigation}
 			/>
 		</Tab.Navigator>
 	)

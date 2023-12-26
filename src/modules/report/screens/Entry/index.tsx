@@ -1,11 +1,11 @@
 // React
-import { memo, useCallback, useState } from 'react'
+import { memo } from 'react'
 
 // Safe Area Context
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 // React Native
-import { ScrollView, TouchableOpacity } from 'react-native'
+import { ScrollView } from 'react-native'
 
 // Components
 import {
@@ -15,28 +15,8 @@ import {
 	FormSelect
 } from '@/modules/app/components'
 
-// React Navigation
-import { useNavigation } from '@react-navigation/native'
-
 // Glue Stack
-import {
-	Text,
-	VStack,
-	View,
-	HStack,
-	Box,
-	Actionsheet,
-	ActionsheetDragIndicatorWrapper,
-	ActionsheetBackdrop,
-	ActionsheetContent,
-	ActionsheetDragIndicator,
-	ActionsheetItem,
-	Image,
-	Divider
-} from '@gluestack-ui/themed'
-
-// Types
-import { THomeScreenProps } from './types'
+import { Text, VStack, View, HStack, Box, Image } from '@gluestack-ui/themed'
 
 // React Native Responsive
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
@@ -83,7 +63,7 @@ const ReportEntryScreen = memo(() => {
 							<View marginTop={20} marginBottom={5}>
 								<VStack space='md'>
 									<BaseBox>
-										<VStack space='md' paddingLeft={15}>
+										<VStack space='md'>
 											<VStack>
 												<Text color='#000' fontSize={14} fontWeight={'$bold'}>
 													24 Nov 2023

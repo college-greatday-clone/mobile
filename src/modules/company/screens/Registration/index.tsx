@@ -5,7 +5,10 @@ import { memo, useCallback } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 // React Native
-import { View, Text, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
+
+// Glue Stack
+import { View, HStack, VStack, Text, Box } from '@gluestack-ui/themed'
 
 // Components
 import {
@@ -13,9 +16,6 @@ import {
 	BaseBox,
 	BaseButton
 } from '@/modules/app/components'
-
-// React Native Responsive
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 
 // Toast
 import { toastConfirm } from '@/plugins/toast'
@@ -35,55 +35,60 @@ const CompanyRegistrationScreen = memo(() => {
 			<ScrollView contentContainerStyle={{ paddingBottom: 15 }}>
 				<BaseGreatDayBanner />
 
-				<View className='px-4'>
-					<Text className='font-light text-[16px] mb-2'>Companies</Text>
-					<BaseBox className='flex flex-col gap-2 mt-2'>
-						<View className='flex flex-col gap-1 mb-2'>
-							<Text className='text-black font-bold text-[14px] leading-normal'>
+				<View paddingHorizontal={20}>
+					<Text fontSize={16} fontWeight={'$bold'} marginBottom={10}>
+						Companies
+					</Text>
+					<BaseBox>
+						<VStack marginBottom={10}>
+							<Text fontSize={14} color='#000' fontWeight={'$bold'}>
 								PT.GITS Indonesia
 							</Text>
-							<Text className='text-[12px] leading-normal'>
-								Jakarta · 100 - 500 employee
-							</Text>
-							<Text className='text-[12px] leading-normal'>
-								hrmanager@gits.id · 081234567890
-							</Text>
-						</View>
-						<View className='flex flex-row items-center justify-between'>
-							<BaseButton
-								button={{
-									width: wp(40),
-									height: 30,
-									variant: 'outline',
-									borderColor: '$primary400',
-									onPress: () => {
-										onActionPress()
-									}
-								}}
-								buttonText={{
-									color: '$primary400',
-									fontSize: 12
-								}}
-							>
-								Decline
-							</BaseButton>
-							<BaseButton
-								button={{
-									width: wp(40),
-									height: 30,
-									backgroundColor: '$primary400',
-									onPress: () => {
-										onActionPress()
-									}
-								}}
-								buttonText={{
-									color: '#fff',
-									fontSize: 12
-								}}
-							>
-								Approve
-							</BaseButton>
-						</View>
+							<Text fontSize={12}>Jakarta · 100 - 500 employee</Text>
+							<Text fontSize={12}>hrmanager@gits.id · 081234567890</Text>
+						</VStack>
+						<HStack
+							w='$full'
+							alignItems='center'
+							justifyContent='space-between'
+							space='sm'
+						>
+							<Box w='$1/2'>
+								<BaseButton
+									button={{
+										height: 30,
+										variant: 'outline',
+										borderColor: '$primary400',
+										onPress: () => {
+											onActionPress()
+										}
+									}}
+									buttonText={{
+										color: '$primary400',
+										fontSize: 12
+									}}
+								>
+									Decline
+								</BaseButton>
+							</Box>
+							<Box w='$1/2'>
+								<BaseButton
+									button={{
+										height: 30,
+										backgroundColor: '$primary400',
+										onPress: () => {
+											onActionPress()
+										}
+									}}
+									buttonText={{
+										color: '#fff',
+										fontSize: 12
+									}}
+								>
+									Approve
+								</BaseButton>
+							</Box>
+						</HStack>
 					</BaseBox>
 				</View>
 			</ScrollView>

@@ -5,7 +5,10 @@ import { memo, useCallback, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 // React Native
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
+import { ScrollView } from 'react-native'
+
+// Glue Stack
+import { View, Text, HStack, Box, VStack } from '@gluestack-ui/themed'
 
 // Components
 import {
@@ -16,7 +19,10 @@ import {
 import { ModalAddEmployee } from './components'
 
 // React Native Responsive
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
+import {
+	widthPercentageToDP as wp,
+	heightPercentageToDP as hp
+} from 'react-native-responsive-screen'
 
 // React Navigation
 import { useNavigation } from '@react-navigation/native'
@@ -50,40 +56,53 @@ const EmployeeListScreen = memo(() => {
 
 	return (
 		<SafeAreaView className='flex-1 bg-white'>
-			<ScrollView contentContainerStyle={{ paddingBottom: 15 }}>
-				<BaseGreatDayBanner />
+			<BaseGreatDayBanner />
 
-				<View className='px-4'>
-					<Text className='font-bold text-[16px] mb-4'>PT. GITS Indonesia</Text>
-					<TouchableOpacity
-						onPress={() =>
-							navigation.navigate(EEmployeeStackNavigation.DETAIL, { id: '1' })
-						}
-					>
-						<BaseBox className='flex flex-row gap-2 items-center mb-4'>
-							<View
-								className='w-[40px] h-[40px] rounded-full bg-[#D9D9D9]'
-								aria-label='Dump Photo'
-							/>
-							<View className='flex flex-col gap-1'>
-								<Text className='text-[#000] text-[14px] leading-normal font-semibold'>
-									Huda Prasetyo
-								</Text>
-								<Text className='text-[#000] text-[12px] leading-normal font-light'>
-									Employee · Full Stack Developer
-								</Text>
-							</View>
+			<View style={{ height: hp(75) }}>
+				<ScrollView contentContainerStyle={{ paddingBottom: 15 }}>
+					<View paddingHorizontal={20}>
+						<Text
+							color='#000'
+							fontWeight={'$extrabold'}
+							fontSize={16}
+							marginBottom={10}
+						>
+							PT. GITS Indonesia
+						</Text>
+						<BaseBox>
+							<HStack space='md' alignItems='center'>
+								<Box
+									w={40}
+									h={40}
+									borderRadius={'$full'}
+									backgroundColor={'#D9D9D9'}
+								/>
+								<VStack>
+									<Text fontSize={14} color='#000' fontWeight={'$semibold'}>
+										Huda Prasetyo
+									</Text>
+									<Text fontSize={13} fontWeight={'$light'} color='#000'>
+										Employee · Full Stack Developer
+									</Text>
+								</VStack>
+							</HStack>
 						</BaseBox>
-					</TouchableOpacity>
-				</View>
-			</ScrollView>
+					</View>
+				</ScrollView>
+			</View>
 
-			<View className='absolute bottom-0 px-4'>
+			<HStack
+				w='$full'
+				alignItems='center'
+				justifyContent='center'
+				position='absolute'
+				bottom={0}
+				marginBottom={10}
+			>
 				<BaseButton
 					button={{
 						width: wp(90),
 						backgroundColor: '$primary400',
-						marginBottom: 10,
 						rounded: '$lg',
 						onPress: () => {
 							handleModal('isAddEmployeeOpen', true)
@@ -92,7 +111,7 @@ const EmployeeListScreen = memo(() => {
 				>
 					Add Employee
 				</BaseButton>
-			</View>
+			</HStack>
 
 			<ModalAddEmployee
 				isOpen={modalOptions.isAddEmployeeOpen}
