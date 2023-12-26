@@ -39,10 +39,7 @@ import {
 import { THomeScreenProps } from './types'
 
 // React Native Responsive
-import {
-	heightPercentageToDP as hp,
-	widthPercentageToDP as wp
-} from 'react-native-responsive-screen'
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 
 // Assets
 import WarningRedImage from '@/assets/images/warning-red.png'
