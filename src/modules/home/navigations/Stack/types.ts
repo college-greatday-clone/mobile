@@ -3,5 +3,7 @@ import { EHomeStackNavigation } from '@/modules/app/constants/navigation.constan
 
 export type THomeStackNavigationParams = {
 	[EHomeStackNavigation.INDEX]: undefined
-	[EHomeStackNavigation.ATTEND]: undefined
+	[EHomeStackNavigation.ATTEND]: {
+		base64: string
+	}
 }

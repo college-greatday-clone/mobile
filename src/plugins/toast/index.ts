@@ -35,26 +35,25 @@ export const toastError = (message?: string, callback?: () => void) => {
 	})
 }
 
-export const toastConfirm = (
-	message?: string,
-	callback?: { confirmCallback?: () => void; cancelCallback?: () => void }
-) => {
-	Popup.show({
-		type: 'confirm',
-		title: 'Confirmation',
-		textBody: message || 'Are you sure want to do this action',
-		buttonText: 'Yes',
-		confirmText: 'No',
-		okButtonStyle: {
-			backgroundColor: '#FE881A'
-		},
-		callback: () => {
-			Popup.hide()
-			if (callback?.confirmCallback) callback.confirmCallback()
-		},
-		cancelCallback: () => {
-			Popup.hide()
-			if (callback?.cancelCallback) callback.cancelCallback()
-		}
+export const toastConfirm = (message?: string): Promise<boolean> => {
+	return new Promise(resolve => {
+		Popup.show({
+			type: 'confirm',
+			title: 'Confirmation',
+			textBody: message || 'Are you sure want to do this action',
+			buttonText: 'Yes',
+			confirmText: 'No',
+			okButtonStyle: {
+				backgroundColor: '#FE881A'
+			},
+			callback: () => {
+				Popup.hide()
+				resolve(true)
+			},
+			cancelCallback: () => {
+				Popup.hide()
+				resolve(false)
+			}
+		})
 	})
 }

@@ -1,11 +1,11 @@
 // React
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useState } from 'react'
 
 // Safe Area Context
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 // React Native
-import { View, ScrollView, Text } from 'react-native'
+import { View, ScrollView, Text, TouchableOpacity } from 'react-native'
 
 // Components
 import {
@@ -18,23 +18,58 @@ import {
 import { useNavigation } from '@react-navigation/native'
 
 // Glue Stack
-import { VStack, HStack, Box } from '@gluestack-ui/themed'
+import {
+	VStack,
+	HStack,
+	Box,
+	Actionsheet,
+	ActionsheetDragIndicatorWrapper,
+	ActionsheetBackdrop,
+	ActionsheetContent,
+	ActionsheetDragIndicator,
+	ActionsheetItem,
+	Image,
+	Divider
+} from '@gluestack-ui/themed'
 
 // Types
 import { THomeScreenProps } from './types'
 
 // React Native Responsive
-import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
+import {
+	heightPercentageToDP as hp,
+	widthPercentageToDP as wp
+} from 'react-native-responsive-screen'
 
 // Constants
 import { EHomeStackNavigation } from '@/modules/app/constants/navigation.constant'
 
-// React Native Vision Camera
-import { useCameraPermission } from 'react-native-vision-camera'
+// Image Crop Picker
+import ImagePicker, { ImageOrVideo } from 'react-native-image-crop-picker'
+
+// Assets
+import WarningRedImage from '@/assets/images/warning-red.png'
 
 const HomeEntryScreen = memo(() => {
 	const navigation = useNavigation<THomeScreenProps['navigation']>()
-	const { requestPermission } = useCameraPermission()
+	const [modalOptions, setModalOptions] = useState({
+		isDetailOpen: false
+	})
+
+	/**
+	 * @description Handle modal options
+	 *
+	 * @param {string} type
+	 * @param {boolean} value
+	 *
+	 * @return {void} void
+	 */
+	const handleModal = useCallback(
+		(type: keyof typeof modalOptions, value: boolean): void => {
+			setModalOptions(prev => ({ ...prev, [type]: value }))
+		},
+		[]
+	)
 
 	/**
 	 * @description Handle attend user
@@ -43,18 +78,20 @@ const HomeEntryScreen = memo(() => {
 	 */
 	const onAttend = useCallback(async (): Promise<void> => {
 		try {
-			const response = await requestPermission()
-			console.log('response', response)
+			const response = (await ImagePicker.openCamera({
+				width: 300,
+				height: 400,
+				useFrontCamera: true,
+				includeBase64: true
+			})) as { data: string } & ImageOrVideo
 
-			if (response) {
-				//
-			}
-
-			navigation.navigate(EHomeStackNavigation.ATTEND)
+			navigation.navigate(EHomeStackNavigation.ATTEND, {
+				base64: response.data
+			})
 		} catch (err) {
 			//
 		}
-	}, [navigation, requestPermission])
+	}, [navigation])
 
 	return (
 		<SafeAreaView className='flex-1 bg-white'>
@@ -80,8 +117,8 @@ const HomeEntryScreen = memo(() => {
 									Huda Prasetyo
 								</Text>
 							</View>
-							<View className='bg-[#efefef] p-2 flex flex-row items-center'>
-								<Text className='text-[12px] font-normal leading-normal '>
+							<View className='bg-[#efefef] p-2 flex flex-row items-center rounded-[8px]'>
+								<Text className='text-[12px] font-normal leading-normal text-[#000]'>
 									Regular Office Hour [08:00 - 17:00]
 								</Text>
 							</View>
@@ -95,106 +132,239 @@ const HomeEntryScreen = memo(() => {
 							</Text>
 						</View>
 
-						<View className='border border-[#ebebeb] rounded-[5px]'>
-							<View className='bg-[#FE881A33] p-3 border-b-[#ebebeb]'>
-								<Text className='text-[#000] text-[14px] leading-normal font-medium'>
-									Today (25 Nov 2023)
-								</Text>
-							</View>
+						<TouchableOpacity
+							onPress={() => {
+								handleModal('isDetailOpen', true)
+							}}
+						>
+							<View className='border border-[#ebebeb] rounded-[5px]'>
+								<View className='bg-[#FE881A33] p-3 border-b-[#ebebeb]'>
+									<Text className='text-[#000] text-[14px] leading-normal font-medium'>
+										Today (25 Nov 2023)
+									</Text>
+								</View>
 
-							<View className='py-6'>
-								<VStack>
-									<HStack alignItems='center'>
-										<Box
-											w='$1/2'
-											alignItems='center'
-											justifyContent='flex-end'
-											flexDirection='column'
-											gap={12}
-										>
-											<Text className='text-[#000] text-[14px] leading-normal font-normal'>
-												Clock in
-											</Text>
-											<Text className='text-success text-[14px] leading-normal font-semibold'>
-												-- : --
-											</Text>
-											<Text className='text-[#000] text-[14px] leading-normal font-bold'>
-												Approved
-											</Text>
-										</Box>
-										<Box
-											w='$1/2'
-											alignItems='center'
-											justifyContent='flex-start'
-											flexDirection='column'
-											gap={12}
-										>
-											<Text className='text-[#000] text-[14px] leading-normal font-normal'>
-												Clock out
-											</Text>
-											<Text className='text-error text-[14px] leading-normal font-semibold'>
-												-- : --
-											</Text>
-											<Text className='text-[#000] text-[14px] leading-normal font-bold'>
-												Approved
-											</Text>
-										</Box>
-									</HStack>
-								</VStack>
+								<View className='py-6'>
+									<VStack>
+										<HStack alignItems='center'>
+											<Box
+												w='$1/2'
+												alignItems='center'
+												justifyContent='flex-end'
+												flexDirection='column'
+												gap={12}
+											>
+												<Text className='text-[#000] text-[14px] leading-normal font-normal'>
+													Clock in
+												</Text>
+												<Text className='text-success text-[14px] leading-normal font-semibold'>
+													-- : --
+												</Text>
+												<Text className='text-[#000] text-[14px] leading-normal font-bold'>
+													Approved
+												</Text>
+											</Box>
+											<Box
+												w='$1/2'
+												alignItems='center'
+												justifyContent='flex-start'
+												flexDirection='column'
+												gap={12}
+											>
+												<Text className='text-[#000] text-[14px] leading-normal font-normal'>
+													Clock out
+												</Text>
+												<Text className='text-error text-[14px] leading-normal font-semibold'>
+													-- : --
+												</Text>
+												<Text className='text-[#000] text-[14px] leading-normal font-bold'>
+													Approved
+												</Text>
+											</Box>
+										</HStack>
+									</VStack>
+								</View>
 							</View>
-						</View>
+						</TouchableOpacity>
 
-						<View className='border border-[#ebebeb] rounded-[5px] mt-6'>
-							<View className='bg-[#FE881A33] p-3 border-b-[#ebebeb]'>
-								<Text className='text-[#000] text-[14px] leading-normal font-medium'>
-									Yesterday (24 Nov 2023)
-								</Text>
-							</View>
+						<TouchableOpacity
+							onPress={() => {
+								handleModal('isDetailOpen', true)
+							}}
+						>
+							<View className='border border-[#ebebeb] rounded-[5px] mt-6'>
+								<View className='bg-[#FE881A33] p-3 border-b-[#ebebeb]'>
+									<Text className='text-[#000] text-[14px] leading-normal font-medium'>
+										Yesterday (24 Nov 2023)
+									</Text>
+								</View>
 
-							<View className='py-6'>
-								<VStack>
-									<HStack alignItems='center'>
-										<Box
-											w='$1/2'
-											alignItems='center'
-											justifyContent='flex-end'
-											flexDirection='column'
-											gap={12}
-										>
-											<Text className='text-[#000] text-[14px] leading-normal font-normal'>
-												Clock in
-											</Text>
-											<Text className='text-success text-[14px] leading-normal font-semibold'>
-												-- : --
-											</Text>
-											<Text className='text-[#000] text-[14px] leading-normal font-bold'>
-												Approved
-											</Text>
-										</Box>
-										<Box
-											w='$1/2'
-											alignItems='center'
-											justifyContent='flex-start'
-											flexDirection='column'
-											gap={12}
-										>
-											<Text className='text-[#000] text-[14px] leading-normal font-normal'>
-												Clock out
-											</Text>
-											<Text className='text-error text-[14px] leading-normal font-semibold'>
-												-- : --
-											</Text>
-											<Text className='text-[#000] text-[14px] leading-normal font-bold'>
-												Approved
-											</Text>
-										</Box>
-									</HStack>
-								</VStack>
+								<View className='py-6'>
+									<VStack>
+										<HStack alignItems='center'>
+											<Box
+												w='$1/2'
+												alignItems='center'
+												justifyContent='flex-end'
+												flexDirection='column'
+												gap={12}
+											>
+												<Text className='text-[#000] text-[14px] leading-normal font-normal'>
+													Clock in
+												</Text>
+												<Text className='text-success text-[14px] leading-normal font-semibold'>
+													-- : --
+												</Text>
+												<Text className='text-[#000] text-[14px] leading-normal font-bold'>
+													Approved
+												</Text>
+											</Box>
+											<Box
+												w='$1/2'
+												alignItems='center'
+												justifyContent='flex-start'
+												flexDirection='column'
+												gap={12}
+											>
+												<Text className='text-[#000] text-[14px] leading-normal font-normal'>
+													Clock out
+												</Text>
+												<Text className='text-error text-[14px] leading-normal font-semibold'>
+													-- : --
+												</Text>
+												<Text className='text-[#000] text-[14px] leading-normal font-bold'>
+													Approved
+												</Text>
+											</Box>
+										</HStack>
+									</VStack>
+								</View>
 							</View>
-						</View>
+						</TouchableOpacity>
 					</BaseBox>
 				</View>
 			</ScrollView>
+
+			<Actionsheet
+				isOpen={modalOptions.isDetailOpen}
+				onClose={() => handleModal('isDetailOpen', false)}
+				zIndex={999}
+			>
+				<ActionsheetBackdrop />
+				<ActionsheetContent h={hp(65)} zIndex={999}>
+					<ActionsheetDragIndicatorWrapper>
+						<ActionsheetDragIndicator />
+					</ActionsheetDragIndicatorWrapper>
+					<ActionsheetItem>
+						<VStack space='4xl'>
+							<VStack>
+								<Text className='text-[16px] text-[#000] font-semibold'>
+									Huda Prasetyo
+								</Text>
+								<Text className='text-[14px] text-[#000] font-normal'>
+									Regular Office Hour [08:00 - 17:00]
+								</Text>
+							</VStack>
+
+							<VStack space='xs' justifyContent='space-between'>
+								<HStack
+									space='xs'
+									justifyContent='space-between'
+									alignItems='center'
+								>
+									<VStack w='$1/2' space='xs'>
+										<Text className='text-[14px] text-[#000] font-semibold'>
+											Clock In
+										</Text>
+										<Text className='text-[14px] text-[#000] font-normal'>
+											24 Nov 2023 08:41:00
+										</Text>
+										<Text className='text-[14px] text-success font-normal'>
+											Approved
+										</Text>
+										<HStack alignItems='center' space='xs'>
+											<Image
+												source={WarningRedImage}
+												width={24}
+												height={24}
+												alt='Warning Late For Work'
+											/>
+											<Text className='text-[12px] text-error'>
+												You are Late for Work
+											</Text>
+										</HStack>
+									</VStack>
+									<VStack
+										alignItems='flex-end'
+										justifyContent='flex-end'
+										w='$1/2'
+										paddingRight={10}
+									>
+										<View
+											className='w-[60px] h-[60px] bg-[#D9D9D9]'
+											aria-label='Image'
+										/>
+									</VStack>
+								</HStack>
+							</VStack>
+
+							<Divider />
+
+							<VStack space='xs' justifyContent='space-between'>
+								<HStack
+									space='xs'
+									justifyContent='space-between'
+									alignItems='center'
+								>
+									<VStack w='$1/2' space='xs'>
+										<Text className='text-[14px] text-[#000] font-semibold'>
+											Clock Out
+										</Text>
+										<Text className='text-[14px] text-[#000] font-normal'>
+											24 Nov 2023 08:41:00
+										</Text>
+										<Text className='text-[14px] text-success font-normal'>
+											Approved
+										</Text>
+										<HStack alignItems='center' space='xs'>
+											<Image
+												source={WarningRedImage}
+												width={24}
+												height={24}
+												alt='Warning Late For Work'
+											/>
+											<Text className='text-[12px] text-error'>
+												You are Late for Work
+											</Text>
+										</HStack>
+									</VStack>
+									<VStack
+										alignItems='flex-end'
+										justifyContent='flex-end'
+										w='$1/2'
+										paddingRight={10}
+									>
+										<View
+											className='w-[60px] h-[60px] bg-[#D9D9D9]'
+											aria-label='Image'
+										/>
+									</VStack>
+								</HStack>
+
+								<VStack space='xs'>
+									<Text className='font-extrabold font-[#000]'>
+										Task Management:
+									</Text>
+									<Text>
+										Setup project baru, memasang authentication dan deploying to
+										production server
+									</Text>
+								</VStack>
+							</VStack>
+						</VStack>
+					</ActionsheetItem>
+				</ActionsheetContent>
+			</Actionsheet>
 
 			<View className='absolute bottom-0 px-4'>
 				<BaseButton
