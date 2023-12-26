@@ -13,7 +13,9 @@ const config = createConfig({
 			...defaultConfig.tokens.colors,
 			primary400: '#FE881A',
 			primary300: 'rgba(254, 136, 26, 0.3)',
-			greatDayBlack: '#192928'
+			greatDayBlack: '#192928',
+			red400: '#FF0000',
+			success400: '#41B55A'
 		}
 	}
 })

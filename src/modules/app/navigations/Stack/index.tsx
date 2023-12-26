@@ -18,6 +18,7 @@ import { appGetInitialized } from '@/modules/app/redux'
 
 // Navigations
 import { AuthStackNavigation } from '@/modules/auth/navigations'
+import { AppRootBottomTabNavigation } from '@/modules/app/navigations/BottomTab'
 
 const Stack = createNativeStackNavigator<TAppRootStackNavigationParams>()
 const AppRootStackNavigation = () => {
@@ -29,7 +30,7 @@ const AppRootStackNavigation = () => {
 			initialRouteName={
 				!appIsInitialized
 					? EAppStackNavigation.SPLASH
-					: EAppStackNavigation.AUTH
+					: EAppStackNavigation.ENTRY
 			}
 			screenOptions={{ headerShown: false }}
 		>
@@ -47,6 +48,10 @@ const AppRootStackNavigation = () => {
 					<Stack.Screen
 						name={EAppStackNavigation.AUTH}
 						component={AuthStackNavigation}
+					/>
+					<Stack.Screen
+						name={EAppStackNavigation.ENTRY}
+						component={AppRootBottomTabNavigation}
 					/>
 				</>
 			)}
