@@ -25,6 +25,7 @@ import { useAppSelector } from '@/plugins/redux'
 // Redux
 import {
 	authGetAuthenticatedUserIsHumanResource,
+	authGetAuthenticatedUserIsPic,
 	authGetAuthenticatedUserRole
 } from '@/modules/auth/redux'
 
@@ -37,6 +38,9 @@ const AppRootBottomTabNavigation = () => {
 	const authenticatedUserRole = useAppSelector(authGetAuthenticatedUserRole)
 	const isHumanResource = useAppSelector(
 		authGetAuthenticatedUserIsHumanResource
+	)
+	const authAuthenticatedUserIsPic = useAppSelector(
+		authGetAuthenticatedUserIsPic
 	)
 
 	return (
@@ -62,7 +66,9 @@ const AppRootBottomTabNavigation = () => {
 					}}
 				/>
 			)}
-			{[''].includes(authenticatedUserRole as ERole) && (
+			{[ERole.User, ERole.HRManager].includes(
+				authenticatedUserRole as ERole
+			) && (
 				<Tab.Screen
 					name={EAppBottomTabNavigation.REPORT}
 					component={ReportStackNavigation}
@@ -129,7 +135,8 @@ const AppRootBottomTabNavigation = () => {
 					}}
 				/>
 			)}
-			{[''].includes(authenticatedUserRole as ERole) && (
+			{(authAuthenticatedUserIsPic ||
+				[''].includes(authenticatedUserRole as ERole)) && (
 				<Tab.Screen
 					name={EAppBottomTabNavigation.NOTIFICATION}
 					component={NotificationStackNavigation}

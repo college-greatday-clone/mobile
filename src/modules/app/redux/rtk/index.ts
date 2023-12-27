@@ -22,6 +22,8 @@ import { TAuthRefreshTokenResponse } from '@/modules/auth/types/auth.type'
 // Reducer
 import { auth_HANDLE_TOKENS, auth_HANDLE_LOGOUT } from '@/modules/auth/redux'
 import {
+	TAttendanceApprovalAttrs,
+	TAttendanceApprovalResponse,
 	TAttendanceAttendAttrs,
 	TAttendanceResponse
 } from '../../types/app.type'
@@ -102,9 +104,33 @@ export const emptySplitApi = createApi({
 				url: `/v1/attendances/self`
 			})
 		}),
+		attendance_list: builder.query<TAttendanceResponse, void>({
+			query: () => ({
+				url: '/v1/attendances'
+			})
+		}),
 		attendance_attend: builder.mutation<void, TAttendanceAttendAttrs>({
 			query: ({ body }) => ({
 				url: `/v1/attendances/attend`,
+				method: 'PATCH',
+				body
+			})
+		}),
+		attendance_approvalList: builder.query<TAttendanceApprovalResponse, void>({
+			query: () => ({
+				url: `/v1/attendances/approval`
+			})
+		}),
+		attendance_approve: builder.mutation<void, TAttendanceApprovalAttrs>({
+			query: ({ params, body }) => ({
+				url: `/v1/attendances/approve/${params.id}`,
+				method: 'PATCH',
+				body
+			})
+		}),
+		attendance_reject: builder.mutation<void, TAttendanceApprovalAttrs>({
+			query: ({ params, body }) => ({
+				url: `/v1/attendances/reject/${params.id}`,
 				method: 'PATCH',
 				body
 			})
@@ -112,5 +138,11 @@ export const emptySplitApi = createApi({
 	})
 })
 
-export const { useLazyAttendance_selfQuery, useAttendance_attendMutation } =
-	emptySplitApi
+export const {
+	useLazyAttendance_selfQuery,
+	useLazyAttendance_listQuery,
+	useAttendance_attendMutation,
+	useLazyAttendance_approvalListQuery,
+	useAttendance_approveMutation,
+	useAttendance_rejectMutation
+} = emptySplitApi

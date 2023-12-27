@@ -244,7 +244,7 @@ const HomeAttendScreen = memo(() => {
 								<Text fontSize={12} color='$red400'>
 									{isClockIn
 										? 'You are Late for Work'
-										: 'You to quick for clock out'}
+										: 'You to quick to clock out'}
 								</Text>
 							</HStack>
 						)}

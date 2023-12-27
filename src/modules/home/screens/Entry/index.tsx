@@ -91,17 +91,22 @@ const HomeEntryScreen = memo(() => {
 		yesterday: TAttendance | null
 	} => {
 		if (selfAttendance) {
+			const today =
+				selfAttendance.result?.filter(
+					attendance =>
+						attendance?.createdAt &&
+						dayjs(attendance.createdAt).isSame(dayjs(), 'day')
+				)?.[0] || null
+			const yesterday =
+				selfAttendance.result?.filter(
+					attendance =>
+						attendance?.createdAt &&
+						!dayjs(attendance.createdAt).isSame(dayjs(), 'day')
+				)?.[0] || null
+
 			return {
-				today:
-					selfAttendance.result?.[0]?.createdAt &&
-					dayjs(selfAttendance.result[0].createdAt).isSame(dayjs(), 'day')
-						? selfAttendance.result?.[0]
-						: null,
-				yesterday:
-					selfAttendance.result?.[1]?.createdAt &&
-					!dayjs(selfAttendance.result[1].createdAt).isSame(dayjs(), 'day')
-						? selfAttendance.result?.[1]
-						: null
+				today,
+				yesterday
 			}
 		} else {
 			return {
@@ -325,7 +330,7 @@ const HomeEntryScreen = memo(() => {
 																attendanceApproval =>
 																	attendanceApproval?.type === 'ClockOut'
 															)?.status
-														}{' '}
+														}
 													</Text>
 												</Box>
 											</HStack>

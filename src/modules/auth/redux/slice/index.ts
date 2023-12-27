@@ -63,6 +63,10 @@ export const authGetAuthenticatedUserIsHumanResource = (state: IRootState) =>
 	state.auth.authenticatedUser?.companyUsers?.find(
 		companyUser => companyUser?.isActive
 	)?.position?.name === 'Human Resource'
+export const authGetAuthenticatedUserIsPic = (state: IRootState) =>
+	state.auth.authenticatedUser?.companyUsers?.find(
+		companyUser => companyUser?.isActive
+	)?.isPic
 export const authGetAuthenticatedUserCompanyName = (state: IRootState) =>
 	state.auth.authenticatedUser?.companyUsers?.find(
 		companyUser => companyUser?.isActive
@@ -71,6 +75,10 @@ export const authGetAuthenticatedUserWorkingHour = (state: IRootState) =>
 	state.auth.authenticatedUser?.companyUsers?.find(
 		companyUser => companyUser?.isActive
 	)?.workingHour
+export const authGetAuthenticatedUserWorkType = (state: IRootState) =>
+	state.auth.authenticatedUser?.companyUsers?.find(
+		companyUser => companyUser?.isActive
+	)?.workType
 export const authGetAuthenticatedUserPicList = (state: IRootState) =>
 	state.auth.authenticatedUser?.companyUsers?.find(
 		companyUser => companyUser?.isActive
