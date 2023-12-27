@@ -30,6 +30,9 @@ import { name as appName } from '../../../package.json'
 // App Features
 import { emptySplitApi } from '@/modules/app/redux'
 
+// Middleware
+import { middlewareError } from './middleware'
+
 // Persist Config
 const persistConfig = {
 	key: appName,
@@ -52,6 +55,7 @@ const store = configureStore({
 			}
 		})
 			.prepend(listenerMiddleware.middleware)
+			// .concat(middlewareError)
 			.concat(emptySplitApi.middleware)
 
 		// Flipper debugger (for development purpose only)

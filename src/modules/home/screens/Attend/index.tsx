@@ -39,7 +39,7 @@ import WarningRedImage from '@/assets/images/warning-red.png'
 import { EHomeStackNavigation } from '@/modules/app/constants/navigation.constant'
 
 // Plugins
-import { toastConfirm } from '@/plugins/toast'
+import { popupConfirm } from '@/plugins/toast'
 
 // React Hook Form
 import { Controller, FormProvider, useForm } from 'react-hook-form'
@@ -70,7 +70,7 @@ const HomeAttendScreen = memo(() => {
 	 * @return {Promise<void>} Promise<void>
 	 */
 	const onSaveAttendance = useCallback(async (): Promise<void> => {
-		const response = await toastConfirm()
+		const response = await popupConfirm()
 		if (response) navigation.navigate(EHomeStackNavigation.INDEX)
 	}, [navigation])
 
@@ -174,7 +174,12 @@ const HomeAttendScreen = memo(() => {
 						</View>
 					</VStack>
 
-					<VStack justifyContent='center' alignItems='center' marginTop={20}>
+					<VStack
+						justifyContent='center'
+						alignItems='center'
+						marginTop={20}
+						space='sm'
+					>
 						<Text fontSize={13} fontWeight={'$semibold'}>
 							Task Management
 						</Text>
@@ -189,7 +194,8 @@ const HomeAttendScreen = memo(() => {
 									<FormTextArea
 										textareaInput={{
 											onChangeText: onChange,
-											value
+											value,
+											fontSize: 11
 										}}
 										error={error}
 									/>

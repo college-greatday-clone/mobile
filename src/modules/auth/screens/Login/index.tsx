@@ -1,5 +1,5 @@
 // React
-import { memo, useState } from 'react'
+import { memo, useState, useEffect, useMemo, useCallback } from 'react'
 
 // Safe Area Context
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -11,7 +11,7 @@ import { View, Text } from 'react-native'
 import GreatDayLogo from '@/assets/images/great-day-logo.png'
 
 // React Hook Form
-import { Controller, FormProvider, useForm } from 'react-hook-form'
+import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
@@ -31,6 +31,21 @@ import { EAuthStackNavigation } from '@/modules/app/constants/navigation.constan
 // React Navigation
 import { useNavigation } from '@react-navigation/native'
 
+// Redux
+import {
+	useLazyAuth_companyListQuery,
+	useAuth_loginMutation,
+	auth_HANDLE_TOKENS,
+	auth_HANDLE_AUTHENTICATED_USER,
+	useLazyAuth_meQuery
+} from '@/modules/auth/redux'
+
+// Lodash
+import debounce from 'lodash.debounce'
+
+// Plugins
+import { useAppDispatch } from '@/plugins/redux'
+
 const schemaValidation = yup
 	.object({
 		email: yup.string().email().required('Email is required'),
@@ -47,6 +62,94 @@ const AuthLoginScreen = memo(() => {
 	})
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 	const navigation = useNavigation<TAuthLoginScreenProps>()
+	const watchEmail = useWatch({ control: formMethods.control, name: 'email' })
+	const [
+		fetchCompanyList,
+		{
+			data: companyList,
+			isLoading: isCompanyListLoading,
+			isFetching: isCompanyListFetching
+		}
+	] = useLazyAuth_companyListQuery()
+	const _companyList = useMemo((): { label: string; value: string }[] => {
+		if (companyList) {
+			return companyList.result.map(company => ({
+				label: company.name,
+				value: company.id
+			}))
+		} else {
+			return []
+		}
+	}, [companyList])
+	const [loading, setLoading] = useState({
+		isLogin: false
+	})
+	const [login] = useAuth_loginMutation()
+	const [getAuthenticatedUser] = useLazyAuth_meQuery()
+	const dispatch = useAppDispatch()
+
+	/**
+	 * @description Handle loading
+	 *
+	 * @param {string} type
+	 * @param {boolean} value
+	 *
+	 * @return {void} void
+	 */
+	const handleLoading = useCallback(
+		(type: keyof typeof loading, value: boolean): void => {
+			setLoading(prev => ({ ...prev, [type]: value }))
+		},
+		[]
+	)
+
+	/**
+	 * @description Get company list
+	 *
+	 * @param {string} email
+	 *
+	 * @return {void} void
+	 */
+	const getCompanyList = debounce((email: string): void => {
+		fetchCompanyList({ params: { email } }).unwrap()
+	}, 900)
+
+	/**
+	 * @description Watch email change
+	 *
+	 * @return {void} void
+	 */
+	useEffect(() => {
+		if (watchEmail !== '') {
+			getCompanyList(watchEmail)
+		}
+	}, [watchEmail])
+
+	/**
+	 * @description Handle submit
+	 *
+	 * @param {TAuthLoginForm} form
+	 *
+	 * @return {Promise<void>} Promise<void>
+	 */
+	const onSubmit = useCallback(
+		async (form: TAuthLoginForm): Promise<void> => {
+			handleLoading('isLogin', false)
+
+			try {
+				const loginResponse = await login({ body: form }).unwrap()
+
+				dispatch(auth_HANDLE_TOKENS(loginResponse.result))
+
+				const authenticatedUser = await getAuthenticatedUser().unwrap()
+
+				dispatch(auth_HANDLE_AUTHENTICATED_USER(authenticatedUser.result))
+			} finally {
+				handleLoading('isLogin', true)
+			}
+		},
+		[handleLoading, login]
+	)
 
 	return (
 		<SafeAreaView className='flex-1 bg-white'>
@@ -115,7 +218,7 @@ const AuthLoginScreen = memo(() => {
 								onChange={onChange}
 								error={fieldState?.error}
 								emptyItemPlaceholder='No Company Registered'
-								data={[]}
+								data={_companyList}
 							/>
 						)}
 					/>
@@ -124,8 +227,12 @@ const AuthLoginScreen = memo(() => {
 						<BaseButton
 							button={{
 								backgroundColor: '$primary400',
-								isDisabled: !formMethods.formState.isValid
+								isDisabled: !formMethods.formState.isValid,
+								onPress: () => formMethods.handleSubmit(onSubmit)()
 							}}
+							isLoading={
+								isCompanyListLoading || isCompanyListFetching || loading.isLogin
+							}
 						>
 							Login
 						</BaseButton>

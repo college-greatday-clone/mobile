@@ -15,6 +15,7 @@ import { useAppSelector } from '@/plugins/redux'
 
 // Redux
 import { appGetInitialized } from '@/modules/app/redux'
+import { authGetIsAuthenticated } from '@/modules/auth/redux'
 
 // Navigations
 import { AuthStackNavigation } from '@/modules/auth/navigations'
@@ -22,15 +23,17 @@ import { AppRootBottomTabNavigation } from '@/modules/app/navigations/BottomTab'
 
 const Stack = createNativeStackNavigator<TAppRootStackNavigationParams>()
 const AppRootStackNavigation = () => {
-	// Selector
 	const appIsInitialized = useAppSelector(appGetInitialized)
+	const isAuthenticated = useAppSelector(authGetIsAuthenticated)
 
 	return (
 		<Stack.Navigator
 			initialRouteName={
 				!appIsInitialized
 					? EAppStackNavigation.SPLASH
-					: EAppStackNavigation.ENTRY
+					: !isAuthenticated
+						? EAppStackNavigation.AUTH
+						: EAppStackNavigation.ENTRY
 			}
 			screenOptions={{ headerShown: false }}
 		>
@@ -42,18 +45,20 @@ const AppRootStackNavigation = () => {
 				/>
 			)}
 
+			{/* Check if app is initialized and user not authenticated */}
+			{appIsInitialized && !isAuthenticated && (
+				<Stack.Screen
+					name={EAppStackNavigation.AUTH}
+					component={AuthStackNavigation}
+				/>
+			)}
+
 			{/* Check if app is initialized */}
-			{appIsInitialized && (
-				<>
-					<Stack.Screen
-						name={EAppStackNavigation.AUTH}
-						component={AuthStackNavigation}
-					/>
-					<Stack.Screen
-						name={EAppStackNavigation.ENTRY}
-						component={AppRootBottomTabNavigation}
-					/>
-				</>
+			{appIsInitialized && isAuthenticated && (
+				<Stack.Screen
+					name={EAppStackNavigation.ENTRY}
+					component={AppRootBottomTabNavigation}
+				/>
 			)}
 		</Stack.Navigator>
 	)

@@ -1,5 +1,5 @@
 // React
-import { memo, useState } from 'react'
+import { memo, useState, useCallback } from 'react'
 
 // Safe Area Context
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -25,11 +25,17 @@ import { TAuthRegisterCompanyScreenProps } from './types.ts'
 
 // Constants
 import { AUTH_REGISTER_COMPANY_FORM } from '@/modules/auth/constants/auth.constant'
+import { EAuthStackNavigation } from '@/modules/app/constants/navigation.constant'
 import { BaseButton } from '@/modules/app/components/base'
 
 // React Navigation
 import { useNavigation } from '@react-navigation/native'
-import { EAuthStackNavigation } from '@/modules/app/constants/navigation.constant.ts'
+
+// Redux
+import { useAuth_registerMutation } from '@/modules/auth/redux'
+
+// Plugins
+import { popupConfirm, popupError, popupOk } from '@/plugins/toast'
 
 const schemaValidation = yup
 	.object()
@@ -56,6 +62,53 @@ const AuthRegisterCompanyScreen = memo(() => {
 	})
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 	const navigation = useNavigation<TAuthRegisterCompanyScreenProps>()
+	const [register] = useAuth_registerMutation()
+	const [loading, setLoading] = useState({
+		isRegister: false
+	})
+
+	/**
+	 * @description Handle loading
+	 *
+	 * @param {string} type
+	 * @param {boolean} value
+	 *
+	 * @return {void} void
+	 */
+	const handleLoading = useCallback(
+		(type: keyof typeof loading, value: boolean): void => {
+			setLoading(prev => ({ ...prev, [type]: value }))
+		},
+		[]
+	)
+
+	/**
+	 * @description Submit handler
+	 *
+	 * @param {TAuthRegisterCompanyForm} form
+	 *
+	 * @return {Promise<void>} Promise<void>
+	 */
+	const onSubmit = useCallback(
+		async (form: TAuthRegisterCompanyForm): Promise<void> => {
+			handleLoading('isRegister', true)
+
+			try {
+				const popupResponse = await popupConfirm()
+
+				if (popupResponse) {
+					await register({ body: form }).unwrap()
+
+					navigation.navigate(EAuthStackNavigation.AUTH_LOGIN)
+				}
+			} catch (err) {
+				console.error('err', err)
+			} finally {
+				handleLoading('isRegister', false)
+			}
+		},
+		[handleLoading, register]
+	)
 
 	return (
 		<SafeAreaView className='flex-1 bg-white'>
@@ -203,8 +256,10 @@ const AuthRegisterCompanyScreen = memo(() => {
 							<BaseButton
 								button={{
 									backgroundColor: '$primary400',
-									isDisabled: !formMethods.formState.isValid
+									isDisabled: !formMethods.formState.isValid,
+									onPress: () => formMethods.handleSubmit(onSubmit)()
 								}}
+								isLoading={loading.isRegister}
 							>
 								Register Company
 							</BaseButton>

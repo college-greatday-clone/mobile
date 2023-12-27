@@ -25,7 +25,7 @@ export enum EAttendance {
 	ClockOut = 'ClockOut'
 }
 
-export enum EWork {
+export enum EWorkType {
 	WorkFromHome = 'WorkFromHome',
 	WorkFromOffice = 'WorkFromOffice'
 }

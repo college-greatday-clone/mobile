@@ -33,7 +33,7 @@ import {
 import WarningRedImage from '@/assets/images/warning-red.png'
 
 // Plugins
-import { toastConfirm } from '@/plugins/toast'
+import { popupConfirm } from '@/plugins/toast'
 
 const NotificationListScreen = memo(() => {
 	const navigation = useNavigation<TNotificationListScreenProps['navigation']>()
@@ -145,7 +145,7 @@ const NotificationListScreen = memo(() => {
 															height: 30,
 															variant: 'outline',
 															borderColor: '$primary400',
-															onPress: () => toastConfirm()
+															onPress: () => popupConfirm()
 														}}
 														buttonText={{
 															color: '$primary400',
@@ -160,7 +160,7 @@ const NotificationListScreen = memo(() => {
 														button={{
 															height: 30,
 															backgroundColor: '$primary400',
-															onPress: () => toastConfirm()
+															onPress: () => popupConfirm()
 														}}
 														buttonText={{
 															color: '#fff',

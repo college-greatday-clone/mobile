@@ -1,11 +1,10 @@
 // Types
-import { IAuth } from '@/modules/auth/types/auth.type'
+import { TAuthAuthenticatedUser } from '@/modules/auth/types/auth.type'
 
-export interface IAuthSliceState {
-	isAuthenticated: boolean
+export type TAuthSliceState = {
 	tokens: {
 		token: string
 		refreshToken: string
 	}
-	authenticatedUser: IAuth | null
+	authenticatedUser: TAuthAuthenticatedUser | null
 }

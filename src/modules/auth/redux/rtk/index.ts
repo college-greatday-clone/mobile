@@ -1,51 +1,41 @@
-// Interfaces
+// Types
 import {
-	IAuthAttrsForgotPassword,
-	IAuthAttrsLogin,
-	IAuthAttrsRefreshToken,
-	IAuthAttrsRegister,
-	IAuthAttrsVerify
-} from '@/modules/auth/types'
-import {
-	TAuthResponseUser,
-	TAuthResponseMe,
-	TAuthResponseNull,
-	TAuthResponseRegister,
-	TAuthResponseToken
-} from '@/modules/auth/types/response.type'
+	TAuthAuthenticatedUserResponse,
+	TAuthLoginAttrs,
+	TAuthLoginResponse,
+	TAuthRefreshTokenAttrs,
+	TAuthRefreshTokenResponse,
+	TAuthRegisterCompanyAttrs,
+	TAuthRegisterCompanyResponse,
+	TAuthCompanyListAttrs,
+	TAuthCompanyListResponse
+} from '@/modules/auth/types/auth.type'
 
-// Rtk
+// Redux
 import { emptySplitApi } from '@/modules/app/redux'
 
 export const authApi = emptySplitApi.injectEndpoints({
 	endpoints: builder => ({
-		auth_login: builder.mutation<TAuthResponseToken, IAuthAttrsLogin>({
+		auth_login: builder.mutation<TAuthLoginResponse, TAuthLoginAttrs>({
 			query: ({ body }) => ({
 				url: '/v1/auth/login',
 				method: 'POST',
 				body
 			})
 		}),
-		auth_register: builder.mutation<TAuthResponseRegister, IAuthAttrsRegister>({
+		auth_register: builder.mutation<
+			TAuthRegisterCompanyResponse,
+			TAuthRegisterCompanyAttrs
+		>({
 			query: ({ body }) => ({
 				url: '/v1/auth/register',
 				method: 'POST',
 				body
 			})
 		}),
-		auth_forgotPassword: builder.mutation<
-			TAuthResponseUser,
-			IAuthAttrsForgotPassword
-		>({
-			query: ({ body }) => ({
-				url: '/v1/auth/forgot-password',
-				method: 'POST',
-				body
-			})
-		}),
 		auth_refreshToken: builder.mutation<
-			TAuthResponseToken,
-			IAuthAttrsRefreshToken
+			TAuthRefreshTokenResponse,
+			TAuthRefreshTokenAttrs
 		>({
 			query: ({ body }) => ({
 				url: '/v1/auth/refresh-token',
@@ -53,24 +43,20 @@ export const authApi = emptySplitApi.injectEndpoints({
 				body
 			})
 		}),
-		auth_me: builder.query<TAuthResponseMe, void>({
+		auth_companyList: builder.query<
+			TAuthCompanyListResponse,
+			TAuthCompanyListAttrs
+		>({
+			query: ({ params }) => ({
+				url: `/v1/auth/companies`,
+				params
+			})
+		}),
+		auth_me: builder.query<TAuthAuthenticatedUserResponse, void>({
 			query: () => ({
 				url: '/v1/auth/me'
 			}),
 			keepUnusedDataFor: 0
-		}),
-		auth_verify: builder.mutation<TAuthResponseNull, IAuthAttrsVerify>({
-			query: ({ params, body }) => ({
-				url: `/v1/auth/verify/${params.token}`,
-				method: 'POST',
-				body
-			})
-		}),
-		auth_logout: builder.mutation<TAuthResponseNull, void>({
-			query: () => ({
-				url: '/v1/auth/logout',
-				method: 'POST'
-			})
 		})
 	}),
 	overrideExisting: false
@@ -79,9 +65,7 @@ export const authApi = emptySplitApi.injectEndpoints({
 export const {
 	useAuth_loginMutation,
 	useAuth_registerMutation,
-	useAuth_forgotPasswordMutation,
 	useAuth_refreshTokenMutation,
-	useLazyAuth_meQuery,
-	useAuth_verifyMutation,
-	useAuth_logoutMutation
+	useLazyAuth_companyListQuery,
+	useLazyAuth_meQuery
 } = authApi

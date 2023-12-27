@@ -52,6 +52,9 @@ import ImagePicker, { ImageOrVideo } from 'react-native-image-crop-picker'
 // Assets
 import WarningRedImage from '@/assets/images/warning-red.png'
 
+// Plugins
+import { popupError } from '@/plugins/toast'
+
 const HomeEntryScreen = memo(() => {
 	const navigation = useNavigation<THomeScreenProps['navigation']>()
 	const [modalOptions, setModalOptions] = useState({
@@ -91,7 +94,8 @@ const HomeEntryScreen = memo(() => {
 				base64: response.data
 			})
 		} catch (err) {
-			//
+			const _err = err as { message?: string }
+			popupError(_err?.message || 'Something went wrong when start to attend')
 		}
 	}, [navigation])
 

@@ -5,7 +5,7 @@ export interface IAppCommonLoading {
 	isDetailLoading: boolean
 }
 
-export interface IAppCommonResponse<T extends unknown> {
+export interface IAppResponse<T extends unknown> {
 	message: string
 	result: T
 }

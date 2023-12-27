@@ -10,7 +10,8 @@ export enum EAppBottomTabNavigation {
 	EMPLOYEE = 'Employee',
 	OFFICER = 'Officer',
 	NOTIFICATION = 'Notification',
-	REPORT = 'Report'
+	REPORT = 'Report',
+	PROFILE = 'Profile'
 }
 
 export enum EAuthStackNavigation {
@@ -42,4 +43,8 @@ export enum EOfficerStackNavigation {
 
 export enum ENotificationStackNavigation {
 	INDEX = 'NotificationIndex'
+}
+
+export enum EProfileStackNavigation {
+	INDEX = 'ProfileIndex'
 }

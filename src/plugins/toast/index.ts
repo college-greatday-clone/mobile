@@ -1,7 +1,25 @@
 // React Native Toast
-import { Popup } from 'react-native-popup-confirm-toast'
+import { Popup, Toast } from 'react-native-popup-confirm-toast'
 
-export const toastOk = (message?: string, callback?: () => void) => {
+export const toastOk = (message?: string): void => {
+	Toast.show({
+		title: 'Success',
+		text: message || 'You successfully do this action',
+		backgroundColor: '#702c91',
+		timeColor: '#440f5f',
+		timing: 3000,
+		position: 'bottom',
+		statusBarType: 'dark-content',
+		onCloseComplete: () => {
+			//
+		},
+		onOpenComplete: () => {
+			//
+		}
+	})
+}
+
+export const popupOk = (message?: string, callback?: () => void) => {
 	Popup.show({
 		type: 'success',
 		title: 'Success!',
@@ -9,8 +27,6 @@ export const toastOk = (message?: string, callback?: () => void) => {
 		buttonText: 'OK',
 		callback: () => {
 			if (callback) callback()
-
-			Popup.hide()
 		},
 		okButtonStyle: {
 			backgroundColor: '#FE881A'
@@ -18,7 +34,7 @@ export const toastOk = (message?: string, callback?: () => void) => {
 	})
 }
 
-export const toastError = (message?: string, callback?: () => void) => {
+export const popupError = (message?: string, callback?: () => void) => {
 	Popup.show({
 		type: 'danger',
 		title: 'Error!',
@@ -35,7 +51,7 @@ export const toastError = (message?: string, callback?: () => void) => {
 	})
 }
 
-export const toastConfirm = (message?: string): Promise<boolean> => {
+export const popupConfirm = (message?: string): Promise<boolean> => {
 	return new Promise(resolve => {
 		Popup.show({
 			type: 'confirm',

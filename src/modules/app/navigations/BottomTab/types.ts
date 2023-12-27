@@ -8,4 +8,5 @@ export type TAppRootBottomTabNavigationParams = {
 	[EAppBottomTabNavigation.HOME]: undefined
 	[EAppBottomTabNavigation.NOTIFICATION]: undefined
 	[EAppBottomTabNavigation.OFFICER]: undefined
+	[EAppBottomTabNavigation.PROFILE]: undefined
 }
