@@ -23,7 +23,10 @@ import { View, Text } from '@gluestack-ui/themed'
 import { useAppSelector } from '@/plugins/redux'
 
 // Redux
-import { authGetAuthenticatedUserRole } from '@/modules/auth/redux'
+import {
+	authGetAuthenticatedUserIsHumanResource,
+	authGetAuthenticatedUserRole
+} from '@/modules/auth/redux'
 
 // Constants
 import { ERole } from '@/modules/app/constants/common.constant'
@@ -32,6 +35,9 @@ const Tab = createBottomTabNavigator<TAppRootBottomTabNavigationParams>()
 
 const AppRootBottomTabNavigation = () => {
 	const authenticatedUserRole = useAppSelector(authGetAuthenticatedUserRole)
+	const isHumanResource = useAppSelector(
+		authGetAuthenticatedUserIsHumanResource
+	)
 
 	return (
 		<Tab.Navigator screenOptions={{ headerShown: false }}>
@@ -83,7 +89,7 @@ const AppRootBottomTabNavigation = () => {
 					}}
 				/>
 			)}
-			{[''].includes(authenticatedUserRole as ERole) && (
+			{(isHumanResource || [''].includes(authenticatedUserRole as ERole)) && (
 				<Tab.Screen
 					name={EAppBottomTabNavigation.EMPLOYEE}
 					component={EmployeeStackNavigation}
@@ -99,7 +105,10 @@ const AppRootBottomTabNavigation = () => {
 					}}
 				/>
 			)}
-			{[''].includes(authenticatedUserRole as ERole) && (
+			{(isHumanResource ||
+				[ERole.User, ERole.HRManager].includes(
+					authenticatedUserRole as ERole
+				)) && (
 				<Tab.Screen
 					name={EAppBottomTabNavigation.HOME}
 					component={HomeStackNavigation}

@@ -26,7 +26,7 @@ import {
 } from '@gluestack-ui/themed'
 
 // React Navigation
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, useRoute } from '@react-navigation/native'
 
 // Types
 import { TEmployeeDetailScreenProps } from './types'
@@ -34,8 +34,15 @@ import { TEmployeeDetailScreenProps } from './types'
 // Constants
 import { EEmployeeStackNavigation } from '@/modules/app/constants/navigation.constant'
 
+// Utils
+import {
+	renderWorkingHour,
+	renderWorkType
+} from '@/modules/app/utils/common.util'
+
 const EmployeeDetailScreen = memo(() => {
 	const navigation = useNavigation<TEmployeeDetailScreenProps['navigation']>()
+	const route = useRoute<TEmployeeDetailScreenProps['route']>()
 
 	/**
 	 * @description Override Back Handler
@@ -84,10 +91,11 @@ const EmployeeDetailScreen = memo(() => {
 							/>
 							<View className='flex flex-col gap-2'>
 								<Text className='text-[#000] text-[14px] leading-normal font-semibold'>
-									Huda Prasetyo
+									{route.params.user.name}
 								</Text>
 								<Text className='text-[#000] text-[12px] leading-normal font-light'>
-									Employee · PIC
+									Employee {route.params.isPic ? '· PIC' : ''} ·{' '}
+									{route.params.position.name}
 								</Text>
 							</View>
 						</View>
@@ -105,7 +113,7 @@ const EmployeeDetailScreen = memo(() => {
 										</Text>
 									</Box>
 									<Text className='text-[#000] text-[12px] leading-normal font-light'>
-										Employee · PIC
+										{route.params.user.email}
 									</Text>
 								</HStack>
 							</VStack>
@@ -117,7 +125,7 @@ const EmployeeDetailScreen = memo(() => {
 										</Text>
 									</Box>
 									<Text className='text-[#000] text-[12px] leading-normal font-light'>
-										Remote
+										{renderWorkType(route.params.workType)}
 									</Text>
 								</HStack>
 							</VStack>
@@ -129,7 +137,7 @@ const EmployeeDetailScreen = memo(() => {
 										</Text>
 									</Box>
 									<Text className='text-[#000] text-[12px] leading-normal font-light'>
-										08:00 - 17:00
+										{renderWorkingHour(route.params.workingHour)}
 									</Text>
 								</HStack>
 							</VStack>
@@ -141,7 +149,7 @@ const EmployeeDetailScreen = memo(() => {
 										</Text>
 									</Box>
 									<Text className='text-[#000] text-[12px] leading-normal font-light'>
-										Fullstack Developer
+										{route.params.position.name}
 									</Text>
 								</HStack>
 							</VStack>
@@ -153,7 +161,9 @@ const EmployeeDetailScreen = memo(() => {
 										</Text>
 									</Box>
 									<Text className='text-[#000] text-[12px] leading-normal font-light'>
-										Parlindungan
+										{route.params.companyPersonInCharges
+											.map(pic => pic.companyUserPersonInCharge.user.name)
+											?.toString() || '-'}
 									</Text>
 								</HStack>
 							</VStack>
@@ -165,7 +175,7 @@ const EmployeeDetailScreen = memo(() => {
 										</Text>
 									</Box>
 									<Text className='text-[#000] text-[12px] leading-normal font-light'>
-										Bandung
+										{route.params.address}
 									</Text>
 								</HStack>
 							</VStack>
@@ -177,7 +187,7 @@ const EmployeeDetailScreen = memo(() => {
 										</Text>
 									</Box>
 									<Text className='text-[#000] text-[12px] leading-normal font-light'>
-										089-898-434-97
+										{route.params.phoneNumber || '-'}
 									</Text>
 								</HStack>
 							</VStack>

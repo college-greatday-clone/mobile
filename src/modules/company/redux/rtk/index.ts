@@ -8,7 +8,7 @@ import {
 // Redux
 import { emptySplitApi } from '@/modules/app/redux'
 
-export const authApi = emptySplitApi.injectEndpoints({
+export const companyApi = emptySplitApi.injectEndpoints({
 	endpoints: builder => ({
 		company_approvalList: builder.query<TCompanyApprovalListResponse, void>({
 			query: () => ({
@@ -42,4 +42,4 @@ export const {
 	useLazyCompany_approvalListQuery,
 	useCompany_approveMutation,
 	useCompany_declineMutation
-} = authApi
+} = companyApi

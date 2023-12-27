@@ -63,5 +63,9 @@ export const authGetAuthenticatedUserIsHumanResource = (state: IRootState) =>
 	state.auth.authenticatedUser?.companyUsers?.find(
 		companyUser => companyUser?.isActive
 	)?.position?.name === 'Human Resource'
+export const authGetAuthenticatedUserCompanyName = (state: IRootState) =>
+	state.auth.authenticatedUser?.companyUsers?.find(
+		companyUser => companyUser?.isActive
+	)?.company?.name
 
 export default authSlice.reducer
