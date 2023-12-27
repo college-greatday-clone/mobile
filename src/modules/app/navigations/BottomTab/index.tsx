@@ -40,8 +40,13 @@ const AppRootBottomTabNavigation = () => {
 	)
 
 	return (
-		<Tab.Navigator screenOptions={{ headerShown: false }}>
-			{[''].includes(authenticatedUserRole as ERole) && (
+		<Tab.Navigator
+			screenOptions={{ headerShown: false }}
+			initialRouteName={EAppBottomTabNavigation.HOME}
+		>
+			{[ERole.User, ERole.HRManager].includes(
+				authenticatedUserRole as ERole
+			) && (
 				<Tab.Screen
 					name={EAppBottomTabNavigation.OFFICER}
 					component={OfficerStackNavigation}

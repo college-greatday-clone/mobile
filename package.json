@@ -26,6 +26,7 @@
     "@reduxjs/toolkit": "^2.0.1",
     "add": "^2.0.6",
     "async-mutex": "^0.4.0",
+    "dayjs": "^1.11.10",
     "lodash.debounce": "^4.0.8",
     "nativewind": "^2.0.11",
     "react": "18.2.0",

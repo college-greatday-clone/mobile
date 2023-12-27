@@ -1,5 +1,5 @@
 // React
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useState, useMemo } from 'react'
 
 // Safe Area Context
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -37,6 +37,7 @@ import WarningRedImage from '@/assets/images/warning-red.png'
 
 // Constants
 import { EHomeStackNavigation } from '@/modules/app/constants/navigation.constant'
+import { EWorkingHour } from '@/modules/app/constants/common.constant'
 
 // Plugins
 import { popupConfirm } from '@/plugins/toast'
@@ -48,6 +49,25 @@ import * as yup from 'yup'
 
 // Constants
 import { HOME_ATTEND_FORM } from '@/modules/home/constants/home.constant'
+
+// Redux
+import { useAttendance_attendMutation } from '@/modules/app/redux'
+import {
+	authGetAuthenticatedUserName,
+	authGetAuthenticatedUserPosition,
+	authGetAuthenticatedUserWorkingHour
+} from '@/modules/auth/redux'
+
+// DayJS
+import dayjs from 'dayjs'
+
+// Plugins
+import { useAppSelector } from '@/plugins/redux'
+
+const eightAm = dayjs().set('hour', 8).set('minute', 0).set('second', 0)
+const nineAm = dayjs().set('hour', 9).set('minute', 0).set('second', 0)
+const fivePm = dayjs().set('hour', 17).set('minute', 0).set('second', 0)
+const sixPm = dayjs().set('hour', 18).set('minute', 0).set('second', 0)
 
 const schemaValidation = yup
 	.object({
@@ -63,16 +83,91 @@ const HomeAttendScreen = memo(() => {
 		defaultValues: HOME_ATTEND_FORM,
 		mode: 'all'
 	})
+	const [attend] = useAttendance_attendMutation()
+	const [loading, setLoading] = useState({
+		isAttend: false
+	})
+	const authenticatedUserName = useAppSelector(authGetAuthenticatedUserName)
+	const authenticatedUserPosition = useAppSelector(
+		authGetAuthenticatedUserPosition
+	)
+	const authenticatedUserWorkingHour = useAppSelector(
+		authGetAuthenticatedUserWorkingHour
+	)
+	const isClockIn = useMemo((): boolean => {
+		return !route.params.attendance?.clockIn
+	}, [route.params.attendance?.clockIn])
+	const isLate = useMemo((): boolean => {
+		if (isClockIn) {
+			if (authenticatedUserWorkingHour === EWorkingHour.EightToFive) {
+				return dayjs().isAfter(eightAm)
+			}
+
+			if (authenticatedUserWorkingHour === EWorkingHour.NineToEight) {
+				return dayjs().isAfter(nineAm)
+			}
+		}
+
+		if (!isClockIn) {
+			if (authenticatedUserWorkingHour === EWorkingHour.EightToFive) {
+				return dayjs().isBefore(fivePm)
+			}
+
+			if (authenticatedUserWorkingHour === EWorkingHour.NineToEight) {
+				return dayjs().isBefore(sixPm)
+			}
+		}
+
+		return false
+	}, [authenticatedUserWorkingHour, isClockIn])
+
+	/**
+	 * @description Handle loading
+	 *
+	 * @param {string} type
+	 * @param {boolean} value
+	 *
+	 * @return {void} void
+	 */
+	const handleLoading = useCallback(
+		(type: keyof typeof loading, value: boolean): void => {
+			setLoading(prev => ({ ...prev, [type]: value }))
+		},
+		[]
+	)
 
 	/**
 	 * @description Save attendance
 	 *
+	 * @param {THomeAttendForm} form
+	 *
 	 * @return {Promise<void>} Promise<void>
 	 */
-	const onSaveAttendance = useCallback(async (): Promise<void> => {
-		const response = await popupConfirm()
-		if (response) navigation.navigate(EHomeStackNavigation.INDEX)
-	}, [navigation])
+	const onSaveAttendance = useCallback(
+		async (form?: THomeAttendForm): Promise<void> => {
+			const response = await popupConfirm()
+			if (response) {
+				try {
+					handleLoading('isAttend', true)
+
+					await attend({
+						body: {
+							photo: route.params.base64,
+							date: route.params.date,
+							remark: form?.remark
+						}
+					}).unwrap()
+
+					navigation.navigate(EHomeStackNavigation.INDEX)
+				} catch (err) {
+					console.error('err', err)
+				} finally {
+					handleLoading('isAttend', false)
+				}
+			}
+		},
+		[handleLoading, navigation, route.params.base64, route.params.date]
+	)
 
 	return (
 		<FormProvider {...formMethods}>
@@ -92,7 +187,7 @@ const HomeAttendScreen = memo(() => {
 						>
 							<Icon as={ChevronLeftIcon} color='#fff' size='xl' />
 							<Text fontSize={18} fontWeight={'$medium'} color='#fff'>
-								Clock in
+								{isClockIn ? 'Clock In' : 'Clock Out'}
 							</Text>
 						</TouchableOpacity>
 					</HStack>
@@ -109,7 +204,7 @@ const HomeAttendScreen = memo(() => {
 							color={'$black'}
 							fontWeight={'$bold'}
 						>
-							Huda Prasetyo
+							{authenticatedUserName}
 						</Text>
 						<Text
 							fontSize={15}
@@ -117,7 +212,7 @@ const HomeAttendScreen = memo(() => {
 							color={'$black'}
 							fontWeight={'$thin'}
 						>
-							Fullstack Developer
+							{authenticatedUserPosition}
 						</Text>
 					</VStack>
 
@@ -128,7 +223,7 @@ const HomeAttendScreen = memo(() => {
 						space={'sm'}
 					>
 						<Text fontSize={13} lineHeight={'$md'} color={'$black'}>
-							25 Nov 2023
+							{dayjs().format('DD MMM YYYY')}
 						</Text>
 						<Text
 							fontSize={24}
@@ -136,19 +231,23 @@ const HomeAttendScreen = memo(() => {
 							color={'$primary400'}
 							fontWeight={'$bold'}
 						>
-							08:00
+							{dayjs(route.params.date).format('HH:mm')}
 						</Text>
-						<HStack alignItems='center' space='xs'>
-							<Image
-								source={WarningRedImage}
-								width={24}
-								height={24}
-								alt='Warning Late For Work'
-							/>
-							<Text fontSize={12} color='$red400'>
-								You are Late for Work
-							</Text>
-						</HStack>
+						{isLate && (
+							<HStack alignItems='center' space='xs'>
+								<Image
+									source={WarningRedImage}
+									width={24}
+									height={24}
+									alt='Warning Late For Work'
+								/>
+								<Text fontSize={12} color='$red400'>
+									{isClockIn
+										? 'You are Late for Work'
+										: 'You to quick for clock out'}
+								</Text>
+							</HStack>
+						)}
 					</VStack>
 
 					<VStack justifyContent='center' alignItems='center' marginTop={20}>
@@ -174,35 +273,37 @@ const HomeAttendScreen = memo(() => {
 						</View>
 					</VStack>
 
-					<VStack
-						justifyContent='center'
-						alignItems='center'
-						marginTop={20}
-						space='sm'
-					>
-						<Text fontSize={13} fontWeight={'$semibold'}>
-							Task Management
-						</Text>
-						<View width={wp(80)}>
-							<Controller
-								control={formMethods.control}
-								name='remark'
-								render={({
-									field: { onChange, value },
-									fieldState: { error }
-								}) => (
-									<FormTextArea
-										textareaInput={{
-											onChangeText: onChange,
-											value,
-											fontSize: 11
-										}}
-										error={error}
-									/>
-								)}
-							/>
-						</View>
-					</VStack>
+					{!isClockIn && (
+						<VStack
+							justifyContent='center'
+							alignItems='center'
+							marginTop={20}
+							space='sm'
+						>
+							<Text fontSize={13} fontWeight={'$semibold'}>
+								Task Management
+							</Text>
+							<View width={wp(80)}>
+								<Controller
+									control={formMethods.control}
+									name='remark'
+									render={({
+										field: { onChange, value },
+										fieldState: { error }
+									}) => (
+										<FormTextArea
+											textareaInput={{
+												onChangeText: onChange,
+												value,
+												fontSize: 11
+											}}
+											error={error}
+										/>
+									)}
+								/>
+							</View>
+						</VStack>
+					)}
 				</ScrollView>
 
 				<View
@@ -218,10 +319,14 @@ const HomeAttendScreen = memo(() => {
 							marginBottom: 10,
 							rounded: '$lg',
 							width: wp(90),
-							onPress: () => onSaveAttendance()
+							onPress: () =>
+								!isClockIn
+									? formMethods.handleSubmit(onSaveAttendance)()
+									: onSaveAttendance()
 						}}
+						isLoading={loading.isAttend}
 					>
-						Save Clock in
+						Save {isClockIn ? 'Clock In' : 'Clock Out'}
 					</BaseButton>
 				</View>
 			</SafeAreaView>

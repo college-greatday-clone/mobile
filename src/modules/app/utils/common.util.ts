@@ -4,6 +4,9 @@ import {
 	EWorkType
 } from '@/modules/app/constants/common.constant'
 
+// DayJS
+import dayjs from 'dayjs'
+
 export const renderWorkingHour = (workingHour: EWorkingHour): string => {
 	switch (workingHour) {
 		case EWorkingHour.EightToFive:
@@ -24,4 +27,10 @@ export const renderWorkType = (workType: EWorkType): string => {
 		default:
 			return ''
 	}
+}
+
+export const getToday = () => {
+	let today = dayjs().startOf('day')
+
+	return today.toDate()
 }

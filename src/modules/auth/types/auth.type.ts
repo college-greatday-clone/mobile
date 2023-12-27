@@ -56,8 +56,32 @@ export type TAuthCompanyUser = {
 		id: string
 		name: string
 	}
-	companyUserControls: TAuthPic[]
-	companyPersonInCharges: TAuthPic[]
+	companyUserControls: {
+		companyUser: {
+			id: string
+			position: {
+				id: string
+				name: string
+			}
+			user: {
+				id: string
+				name: string
+			}
+		}
+	}[]
+	companyPersonInCharges: {
+		companyUserPersonInCharge: {
+			id: string
+			position: {
+				id: string
+				name: string
+			}
+			user: {
+				id: string
+				name: string
+			}
+		}
+	}[]
 }
 
 export type TAuthAuthenticatedUser = {

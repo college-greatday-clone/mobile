@@ -16,7 +16,17 @@ import { BaseGreatDayBanner, BaseBox } from '@/modules/app/components'
 // React Native Responsive
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 
+// Plugins
+import { useAppSelector } from '@/plugins/redux'
+
+// Redux
+import { authGetAuthenticatedUserPicList } from '@/modules/auth/redux'
+
 const OfficerListScreen = memo(() => {
+	const authenticatedUserPicList = useAppSelector(
+		authGetAuthenticatedUserPicList
+	)
+
 	return (
 		<SafeAreaView className='flex-1 bg-white'>
 			<BaseGreatDayBanner />
@@ -32,24 +42,29 @@ const OfficerListScreen = memo(() => {
 						>
 							Your Projects Officers
 						</Text>
-						<BaseBox>
-							<HStack space='md' alignItems='center'>
-								<Box
-									w={40}
-									h={40}
-									borderRadius={'$full'}
-									backgroundColor={'#D9D9D9'}
-								/>
-								<VStack>
-									<Text fontSize={14} color='#000' fontWeight={'$semibold'}>
-										Huda Prasetyo
-									</Text>
-									<Text fontSize={13} fontWeight={'$light'} color='#000'>
-										Employee · Full Stack Developer
-									</Text>
-								</VStack>
-							</HStack>
-						</BaseBox>
+
+						{authenticatedUserPicList.map(pic => (
+							<View marginBottom={10} key={pic.companyUserPersonInCharge.id}>
+								<BaseBox>
+									<HStack space='md' alignItems='center'>
+										<Box
+											w={40}
+											h={40}
+											borderRadius={'$full'}
+											backgroundColor={'#D9D9D9'}
+										/>
+										<VStack>
+											<Text fontSize={14} color='#000' fontWeight={'$semibold'}>
+												{pic.companyUserPersonInCharge.user.name}
+											</Text>
+											<Text fontSize={13} fontWeight={'$light'} color='#000'>
+												Employee · {pic.companyUserPersonInCharge.position.name}
+											</Text>
+										</VStack>
+									</HStack>
+								</BaseBox>
+							</View>
+						))}
 					</View>
 				</ScrollView>
 			</View>

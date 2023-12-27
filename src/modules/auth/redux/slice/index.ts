@@ -67,5 +67,17 @@ export const authGetAuthenticatedUserCompanyName = (state: IRootState) =>
 	state.auth.authenticatedUser?.companyUsers?.find(
 		companyUser => companyUser?.isActive
 	)?.company?.name
+export const authGetAuthenticatedUserWorkingHour = (state: IRootState) =>
+	state.auth.authenticatedUser?.companyUsers?.find(
+		companyUser => companyUser?.isActive
+	)?.workingHour
+export const authGetAuthenticatedUserPicList = (state: IRootState) =>
+	state.auth.authenticatedUser?.companyUsers?.find(
+		companyUser => companyUser?.isActive
+	)?.companyPersonInCharges || []
+export const authGetAuthenticatedUserPosition = (state: IRootState) =>
+	state.auth.authenticatedUser?.companyUsers?.find(
+		companyUser => companyUser?.isActive
+	)?.position?.name
 
 export default authSlice.reducer

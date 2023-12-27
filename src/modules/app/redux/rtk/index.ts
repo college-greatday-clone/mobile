@@ -21,6 +21,10 @@ import { TAuthRefreshTokenResponse } from '@/modules/auth/types/auth.type'
 
 // Reducer
 import { auth_HANDLE_TOKENS, auth_HANDLE_LOGOUT } from '@/modules/auth/redux'
+import {
+	TAttendanceAttendAttrs,
+	TAttendanceResponse
+} from '../../types/app.type'
 
 // Init Mutex
 const mutex = new Mutex()
@@ -92,5 +96,21 @@ const baseQueryWithReAuth: BaseQueryFn<
 export const emptySplitApi = createApi({
 	// If you want to use interceptor
 	baseQuery: baseQueryWithReAuth,
-	endpoints: () => ({})
+	endpoints: builder => ({
+		attendance_self: builder.query<TAttendanceResponse, void>({
+			query: () => ({
+				url: `/v1/attendances/self`
+			})
+		}),
+		attendance_attend: builder.mutation<void, TAttendanceAttendAttrs>({
+			query: ({ body }) => ({
+				url: `/v1/attendances/attend`,
+				method: 'PATCH',
+				body
+			})
+		})
+	})
 })
+
+export const { useLazyAttendance_selfQuery, useAttendance_attendMutation } =
+	emptySplitApi

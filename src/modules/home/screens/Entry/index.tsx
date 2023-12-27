@@ -1,5 +1,5 @@
 // React
-import { memo, useCallback, useState } from 'react'
+import { memo, useCallback, useState, useEffect, useMemo } from 'react'
 
 // Safe Area Context
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -15,7 +15,7 @@ import {
 } from '@/modules/app/components'
 
 // React Navigation
-import { useNavigation } from '@react-navigation/native'
+import { useIsFocused, useNavigation } from '@react-navigation/native'
 
 // Glue Stack
 import {
@@ -36,6 +36,7 @@ import {
 
 // Types
 import { THomeScreenProps } from './types'
+import { TAttendance } from '@/modules/app/types/app.type'
 
 // React Native Responsive
 import {
@@ -45,6 +46,7 @@ import {
 
 // Constants
 import { EHomeStackNavigation } from '@/modules/app/constants/navigation.constant'
+import { EWorkingHour } from '@/modules/app/constants/common.constant'
 
 // Image Crop Picker
 import ImagePicker, { ImageOrVideo } from 'react-native-image-crop-picker'
@@ -54,12 +56,81 @@ import WarningRedImage from '@/assets/images/warning-red.png'
 
 // Plugins
 import { popupError } from '@/plugins/toast'
+import { useAppSelector } from '@/plugins/redux'
+
+// Redux
+import {
+	authGetAuthenticatedUserCompanyName,
+	authGetAuthenticatedUserName,
+	authGetAuthenticatedUserWorkingHour
+} from '@/modules/auth/redux'
+import { useLazyAttendance_selfQuery } from '@/modules/app/redux'
+
+// Utils
+import { renderWorkingHour } from '@/modules/app/utils/common.util'
+
+// Dayjs
+import dayjs from 'dayjs'
 
 const HomeEntryScreen = memo(() => {
 	const navigation = useNavigation<THomeScreenProps['navigation']>()
 	const [modalOptions, setModalOptions] = useState({
 		isDetailOpen: false
 	})
+	const authenticatedUserCompanyName = useAppSelector(
+		authGetAuthenticatedUserCompanyName
+	)
+	const authenticatedUserName = useAppSelector(authGetAuthenticatedUserName)
+	const authenticatedUserWorkingHour = useAppSelector(
+		authGetAuthenticatedUserWorkingHour
+	)
+	const [fetchSelfAttendance, { data: selfAttendance }] =
+		useLazyAttendance_selfQuery()
+	const attendance = useMemo((): {
+		today: TAttendance | null
+		yesterday: TAttendance | null
+	} => {
+		if (selfAttendance) {
+			return {
+				today:
+					selfAttendance.result?.[0]?.createdAt &&
+					dayjs(selfAttendance.result[0].createdAt).isSame(dayjs(), 'day')
+						? selfAttendance.result?.[0]
+						: null,
+				yesterday:
+					selfAttendance.result?.[1]?.createdAt &&
+					!dayjs(selfAttendance.result[1].createdAt).isSame(dayjs(), 'day')
+						? selfAttendance.result?.[1]
+						: null
+			}
+		} else {
+			return {
+				today: null,
+				yesterday: null
+			}
+		}
+	}, [selfAttendance])
+	const [currentAttendance, setCurrentAttendance] =
+		useState<TAttendance | null>(null)
+	const isFocused = useIsFocused()
+	const isClockIn = useMemo((): boolean => {
+		return !attendance.today?.clockIn
+	}, [attendance.today?.clockIn])
+	const isFullyAttend = useMemo((): boolean => {
+		return (
+			typeof attendance.today?.clockIn === 'string' &&
+			typeof attendance.today?.clockOut === 'string'
+		)
+	}, [attendance.today?.clockIn, attendance.today?.clockOut])
+
+	/**
+	 * @description Do anything when start to came to this screen
+	 *
+	 * @return {void} void
+	 */
+	useEffect(() => {
+		fetchSelfAttendance()
+	}, [isFocused])
 
 	/**
 	 * @description Handle modal options
@@ -91,19 +162,21 @@ const HomeEntryScreen = memo(() => {
 			})) as { data: string } & ImageOrVideo
 
 			navigation.navigate(EHomeStackNavigation.ATTEND, {
-				base64: response.data
+				base64: response.data,
+				attendance: attendance.today,
+				date: dayjs().toDate().toISOString()
 			})
 		} catch (err) {
 			const _err = err as { message?: string }
 			popupError(_err?.message || 'Something went wrong when start to attend')
 		}
-	}, [navigation])
+	}, [navigation, attendance.today])
 
 	return (
 		<SafeAreaView className='flex-1 bg-white'>
 			<BaseGreatDayBanner />
 
-			<View h={hp(75)}>
+			<View h={hp(75)} backgroundColor='#fff'>
 				<ScrollView
 					contentContainerStyle={{ paddingBottom: 30 }}
 					showsVerticalScrollIndicator={false}
@@ -117,7 +190,7 @@ const HomeEntryScreen = memo(() => {
 									fontWeight={'$semibold'}
 									marginBottom={7}
 								>
-									PT.GITS Indonesia
+									{authenticatedUserCompanyName}
 								</Text>
 
 								<VStack alignItems='center' justifyContent='center' space='sm'>
@@ -136,7 +209,7 @@ const HomeEntryScreen = memo(() => {
 											Hallo,
 										</Text>
 										<Text fontSize={20} color='#000' fontWeight={'$semibold'}>
-											Huda Prasetyo
+											{authenticatedUserName}
 										</Text>
 									</HStack>
 									<Box
@@ -146,7 +219,11 @@ const HomeEntryScreen = memo(() => {
 										borderRadius={8}
 									>
 										<Text fontSize={12} color='#000'>
-											Regular Office Hour [08:00 - 17:00]
+											Regular Office Hour [
+											{renderWorkingHour(
+												authenticatedUserWorkingHour as EWorkingHour
+											)}
+											]
 										</Text>
 									</Box>
 								</VStack>
@@ -167,6 +244,7 @@ const HomeEntryScreen = memo(() => {
 							<TouchableOpacity
 								onPress={() => {
 									handleModal('isDetailOpen', true)
+									setCurrentAttendance(attendance.today)
 								}}
 							>
 								<Box
@@ -183,7 +261,7 @@ const HomeEntryScreen = memo(() => {
 										borderBottomColor={'#ebebeb'}
 									>
 										<Text fontSize={14} color='#000' fontWeight={'$medium'}>
-											Today (25 Nov 2023)
+											Today ({dayjs().format('DD MMM YYYY')})
 										</Text>
 									</Box>
 
@@ -205,10 +283,19 @@ const HomeEntryScreen = memo(() => {
 														color='$success400'
 														fontWeight={'$semibold'}
 													>
-														-- : --
+														{attendance.today?.clockIn
+															? dayjs(attendance?.today?.clockIn).format(
+																	'HH:mm'
+																)
+															: '-- : --'}
 													</Text>
 													<Text fontSize={14} fontWeight={'$bold'} color='#000'>
-														Approved
+														{
+															attendance?.today?.attendanceApprovals?.find(
+																attendanceApproval =>
+																	attendanceApproval?.type === 'ClockIn'
+															)?.status
+														}
 													</Text>
 												</Box>
 												<Box
@@ -219,17 +306,26 @@ const HomeEntryScreen = memo(() => {
 													gap={12}
 												>
 													<Text fontSize={14} color='#000'>
-														Clock in
+														Clock out
 													</Text>
 													<Text
 														fontSize={14}
 														color='$red400'
 														fontWeight={'$semibold'}
 													>
-														-- : --
+														{attendance.today?.clockOut
+															? dayjs(attendance?.today?.clockOut).format(
+																	'HH:mm'
+																)
+															: '-- : --'}
 													</Text>
 													<Text fontSize={14} fontWeight={'$bold'} color='#000'>
-														Approved
+														{
+															attendance?.today?.attendanceApprovals?.find(
+																attendanceApproval =>
+																	attendanceApproval?.type === 'ClockOut'
+															)?.status
+														}{' '}
 													</Text>
 												</Box>
 											</HStack>
@@ -241,6 +337,7 @@ const HomeEntryScreen = memo(() => {
 							<TouchableOpacity
 								onPress={() => {
 									handleModal('isDetailOpen', true)
+									setCurrentAttendance(attendance.yesterday)
 								}}
 							>
 								<Box borderWidth={1} borderColor='#ebebeb' borderRadius={5}>
@@ -252,7 +349,8 @@ const HomeEntryScreen = memo(() => {
 										borderBottomColor={'#ebebeb'}
 									>
 										<Text fontSize={14} color='#000' fontWeight={'$medium'}>
-											Yesterday (24 Nov 2023)
+											Yesterday (
+											{dayjs().subtract(1, 'day').format('DD MMM YYYY')})
 										</Text>
 									</Box>
 
@@ -274,10 +372,19 @@ const HomeEntryScreen = memo(() => {
 														color='$success400'
 														fontWeight={'$semibold'}
 													>
-														-- : --
+														{attendance.yesterday?.clockIn
+															? dayjs(attendance?.yesterday?.clockIn).format(
+																	'HH:mm'
+																)
+															: '-- : --'}
 													</Text>
 													<Text fontSize={14} fontWeight={'$bold'} color='#000'>
-														Approved
+														{
+															attendance?.yesterday?.attendanceApprovals?.find(
+																attendanceApproval =>
+																	attendanceApproval?.type === 'ClockIn'
+															)?.status
+														}
 													</Text>
 												</Box>
 												<Box
@@ -288,17 +395,26 @@ const HomeEntryScreen = memo(() => {
 													gap={12}
 												>
 													<Text fontSize={14} color='#000'>
-														Clock in
+														Clock out
 													</Text>
 													<Text
 														fontSize={14}
 														color='$red400'
 														fontWeight={'$semibold'}
 													>
-														-- : --
+														{attendance.yesterday?.clockOut
+															? dayjs(attendance?.yesterday?.clockOut).format(
+																	'HH:mm'
+																)
+															: '-- : --'}
 													</Text>
 													<Text fontSize={14} fontWeight={'$bold'} color='#000'>
-														Approved
+														{
+															attendance?.yesterday?.attendanceApprovals?.find(
+																attendanceApproval =>
+																	attendanceApproval?.type === 'ClockOut'
+															)?.status
+														}
 													</Text>
 												</Box>
 											</HStack>
@@ -325,10 +441,14 @@ const HomeEntryScreen = memo(() => {
 						<VStack space='4xl'>
 							<VStack>
 								<Text fontSize={16} color='#000' fontWeight={'$semibold'}>
-									Huda Prasetyo
+									{authenticatedUserName}
 								</Text>
 								<Text fontSize={14} color='#000' fontWeight={'$normal'}>
-									Regular Office Hour [08:00 - 17:00]
+									Regular Office Hour [
+									{renderWorkingHour(
+										authenticatedUserWorkingHour as EWorkingHour
+									)}
+									]
 								</Text>
 							</VStack>
 
@@ -343,26 +463,37 @@ const HomeEntryScreen = memo(() => {
 											Clock In
 										</Text>
 										<Text fontSize={14} color='#000' fontWeight={'$normal'}>
-											24 Nov 2023 08:41:00
+											{currentAttendance?.clockIn
+												? dayjs(currentAttendance?.clockIn).format(
+														'DD MMM YYYY HH:mm'
+													)
+												: '-- : --'}
 										</Text>
 										<Text
 											fontSize={14}
 											color='$success400'
 											fontWeight={'$normal'}
 										>
-											Approved
+											{
+												currentAttendance?.attendanceApprovals?.find(
+													attendanceApproval =>
+														attendanceApproval?.type === 'ClockIn'
+												)?.status
+											}
 										</Text>
-										<HStack alignItems='center' space='xs'>
-											<Image
-												source={WarningRedImage}
-												width={24}
-												height={24}
-												alt='Warning Late For Work'
-											/>
-											<Text fontSize={12} color='$red400'>
-												You are Late for Work
-											</Text>
-										</HStack>
+										{currentAttendance?.isLateClockIn && (
+											<HStack alignItems='center' space='xs'>
+												<Image
+													source={WarningRedImage}
+													width={24}
+													height={24}
+													alt='Warning Late For Work'
+												/>
+												<Text fontSize={12} color='$red400'>
+													You are Late for Work
+												</Text>
+											</HStack>
+										)}
 									</VStack>
 									<VStack
 										alignItems='flex-end'
@@ -370,12 +501,24 @@ const HomeEntryScreen = memo(() => {
 										w='$1/2'
 										paddingRight={10}
 									>
-										<Box
-											h={60}
-											w={60}
-											backgroundColor='#D9D9D9'
-											borderRadius={8}
-										/>
+										{currentAttendance?.clockInPhoto ? (
+											<Image
+												source={{
+													uri: `data:image/jpeg;base64,${currentAttendance?.clockInPhoto}`
+												}}
+												alt='Clock In Photo'
+												h={60}
+												w={60}
+												objectFit='contain'
+											/>
+										) : (
+											<Box
+												h={60}
+												w={60}
+												backgroundColor='#D9D9D9'
+												borderRadius={8}
+											/>
+										)}
 									</VStack>
 								</HStack>
 							</VStack>
@@ -390,29 +533,40 @@ const HomeEntryScreen = memo(() => {
 								>
 									<VStack w='$1/2' space='xs'>
 										<Text fontSize={14} color='#000' fontWeight={'$semibold'}>
-											Clock In
+											Clock Out
 										</Text>
 										<Text fontSize={14} color='#000' fontWeight={'$normal'}>
-											24 Nov 2023 08:41:00
+											{currentAttendance?.clockOut
+												? dayjs(currentAttendance?.clockOut).format(
+														'DD MMM YYYY HH:mm'
+													)
+												: '-- : --'}
 										</Text>
 										<Text
 											fontSize={14}
 											color='$success400'
 											fontWeight={'$normal'}
 										>
-											Approved
+											{
+												currentAttendance?.attendanceApprovals?.find(
+													attendanceApproval =>
+														attendanceApproval?.type === 'ClockOut'
+												)?.status
+											}
 										</Text>
-										<HStack alignItems='center' space='xs'>
-											<Image
-												source={WarningRedImage}
-												width={24}
-												height={24}
-												alt='Warning Late For Work'
-											/>
-											<Text fontSize={12} color='$red400'>
-												You are Late for Work
-											</Text>
-										</HStack>
+										{currentAttendance?.isLateClockOut && (
+											<HStack alignItems='center' space='xs'>
+												<Image
+													source={WarningRedImage}
+													width={24}
+													height={24}
+													alt='Warning Late For Work'
+												/>
+												<Text fontSize={12} color='$red400'>
+													You clock out to quick
+												</Text>
+											</HStack>
+										)}
 									</VStack>
 									<VStack
 										alignItems='flex-end'
@@ -420,24 +574,37 @@ const HomeEntryScreen = memo(() => {
 										w='$1/2'
 										paddingRight={10}
 									>
-										<Box
-											h={60}
-											w={60}
-											backgroundColor='#D9D9D9'
-											borderRadius={8}
-										/>
+										{currentAttendance?.clockOutPhoto ? (
+											<Image
+												source={{
+													uri: `data:image/jpeg;base64,${currentAttendance?.clockOutPhoto}`
+												}}
+												alt='Clock In Photo'
+												h={60}
+												w={60}
+												objectFit='contain'
+											/>
+										) : (
+											<Box
+												h={60}
+												w={60}
+												backgroundColor='#D9D9D9'
+												borderRadius={8}
+											/>
+										)}
 									</VStack>
 								</HStack>
 
-								<VStack space='xs'>
-									<Text fontSize={14} fontWeight={'$extrabold'} color='#000'>
-										Task Management:
-									</Text>
-									<Text fontSize={13} color='#000'>
-										Setup project baru, memasang authentication dan deploying to
-										production server
-									</Text>
-								</VStack>
+								{currentAttendance?.clockOutRemark && (
+									<VStack space='xs'>
+										<Text fontSize={14} fontWeight={'$extrabold'} color='#000'>
+											Task Management:
+										</Text>
+										<Text fontSize={13} color='#000'>
+											{currentAttendance?.clockOutRemark}
+										</Text>
+									</VStack>
+								)}
 							</VStack>
 						</VStack>
 					</ActionsheetItem>
@@ -455,12 +622,13 @@ const HomeEntryScreen = memo(() => {
 				<BaseButton
 					button={{
 						width: wp(90),
-						backgroundColor: '$primary400',
+						backgroundColor: isFullyAttend ? '#ccc' : '$primary400',
 						rounded: '$lg',
+						disabled: isFullyAttend,
 						onPress: onAttend
 					}}
 				>
-					Clock In
+					{isFullyAttend ? 'FullyAttend' : isClockIn ? 'Clock In' : 'Clock Out'}
 				</BaseButton>
 			</HStack>
 		</SafeAreaView>
