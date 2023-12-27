@@ -5,6 +5,11 @@ export interface IAppCommonLoading {
 	isDetailLoading: boolean
 }
 
+export interface IAppCommonResponse<T extends unknown> {
+	message: string
+	result: T
+}
+
 export interface IAppCommonPagination<T extends unknown[]> {
 	limit: number
 	page: number

@@ -1,11 +1,11 @@
-export enum ERoleType {
+export enum ERole {
 	GreatDayAdmin = 'GreatDayAdmin',
 	HRManager = 'HRManager',
 	User = 'User',
 	Public = 'Public'
 }
 
-export enum ECompanyApprovalStatusType {
+export enum ECompanyApprovalStatus {
 	Pending = 'Pending',
 	InProgress = 'InProgress',
 	Revise = 'Revise',
@@ -14,23 +14,23 @@ export enum ECompanyApprovalStatusType {
 	Declined = 'Declined'
 }
 
-export enum EAttendanceApprovalStatusType {
+export enum EAttendanceApprovalStatus {
 	Pending = 'Pending',
 	Rejected = 'Rejected',
 	Approved = 'Approved'
 }
 
-export enum EAttendanceType {
+export enum EAttendance {
 	ClockIn = 'ClockIn',
 	ClockOut = 'ClockOut'
 }
 
-export enum EWorkType {
+export enum EWork {
 	WorkFromHome = 'WorkFromHome',
 	WorkFromOffice = 'WorkFromOffice'
 }
 
-export enum EWorkingHourType {
+export enum EWorkingHour {
 	EightToFive = 'EightToFive',
 	NineToEight = 'NineToEight'
 }

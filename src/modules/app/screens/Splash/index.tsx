@@ -4,13 +4,21 @@ import { memo } from 'react'
 // Safe Area Context
 import { SafeAreaView } from 'react-native-safe-area-context'
 
-// React Native
-import { Text } from 'react-native'
+// Glue Stack
+import { Image } from '@gluestack-ui/themed'
+
+// Assets
+import GreatDayLogo from '@/assets/images/great-day-logo.png'
 
 const AppSplashScreen = memo(() => {
 	return (
 		<SafeAreaView className='flex-1 flex-col items-center justify-center'>
-			<Text className='text-[14px]'>Splash Screen Here</Text>
+			<Image
+				source={GreatDayLogo}
+				width={250}
+				height={83.88}
+				alt='Splash Logo'
+			/>
 		</SafeAreaView>
 	)
 })
