@@ -25,6 +25,7 @@ import {
 	TAttendanceApprovalAttrs,
 	TAttendanceApprovalResponse,
 	TAttendanceAttendAttrs,
+	TAttendanceListAttrs,
 	TAttendanceResponse
 } from '../../types/app.type'
 
@@ -104,9 +105,13 @@ export const emptySplitApi = createApi({
 				url: `/v1/attendances/self`
 			})
 		}),
-		attendance_list: builder.query<TAttendanceResponse, void>({
-			query: () => ({
-				url: '/v1/attendances'
+		attendance_list: builder.query<
+			TAttendanceResponse,
+			Partial<TAttendanceListAttrs>
+		>({
+			query: ({ params }) => ({
+				url: '/v1/attendances',
+				params
 			})
 		}),
 		attendance_attend: builder.mutation<void, TAttendanceAttendAttrs>({

@@ -149,7 +149,7 @@ const CompanyRegistrationScreen = memo(() => {
 														variant: 'outline',
 														borderColor: '$primary400',
 														onPress: () => {
-															onActionPress('approve', company.id)
+															onActionPress('decline', company.id)
 														}
 													}}
 													buttonText={{
@@ -167,7 +167,7 @@ const CompanyRegistrationScreen = memo(() => {
 														height: 30,
 														backgroundColor: '$primary400',
 														onPress: () => {
-															onActionPress('decline', company.id)
+															onActionPress('approve', company.id)
 														}
 													}}
 													buttonText={{

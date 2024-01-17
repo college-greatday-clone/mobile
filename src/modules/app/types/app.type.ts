@@ -1,5 +1,6 @@
 // Types
 import { IAppResponse } from '@/modules/app/types/api.type'
+import { EWorkType } from '@/modules/app/constants/common.constant'
 
 export type TAttendance = {
 	id: string
@@ -18,6 +19,7 @@ export type TAttendance = {
 		type: string
 		status: string
 	}[]
+	workType: EWorkType
 }
 
 export type TAttendanceApproval = {
@@ -47,12 +49,16 @@ export type TAttendanceApproval = {
 }
 
 export type TAttendanceResponse = IAppResponse<TAttendance[]>
+export type TAttendanceListAttrs = {
+	params: { clockIn: string | number }
+}
 export type TAttendanceApprovalResponse = IAppResponse<TAttendanceApproval[]>
 export type TAttendanceAttendAttrs = {
 	body: {
 		date: string
 		photo: string
 		remark?: string
+		workType?: EWorkType
 	}
 }
 export type TAttendanceApprovalAttrs = {

@@ -28,6 +28,7 @@ const FormSelect = memo(
 		onChange,
 		data,
 		value,
+		defaultValue,
 		placeholder,
 		emptyItemPlaceholder,
 		error,
@@ -38,6 +39,7 @@ const FormSelect = memo(
 				<Select
 					onValueChange={onChange}
 					selectedValue={value}
+					defaultValue={defaultValue}
 					isInvalid={error !== undefined}
 				>
 					<SelectTrigger variant={variant || 'underlined'} size='md'>

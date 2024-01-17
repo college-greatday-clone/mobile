@@ -41,7 +41,8 @@ import WarningRedImage from '@/assets/images/warning-red.png'
 // Redux
 import { useLazyAttendance_listQuery } from '@/modules/app/redux'
 import {
-	authGetAuthenticatedUserWorkType,
+	authGetAuthenticatedUserName,
+	authGetAuthenticatedUserPosition,
 	authGetAuthenticatedUserWorkingHour
 } from '@/modules/auth/redux'
 
@@ -67,7 +68,13 @@ import {
 } from '@/modules/app/constants/common.constant'
 
 // Types
-import { TAttendance } from '@/modules/app/types/app.type'
+import { TAttendance, TAttendanceResponse } from '@/modules/app/types/app.type'
+
+// React Native HTML to PDF
+import RNHTMLtoPDF from 'react-native-html-to-pdf'
+
+// React Native Blob Util
+import RNFetchBlob from 'react-native-blob-util'
 
 const ReportEntryScreen = memo(() => {
 	const [fetchAttendanceList, { data: attendanceList }] =
@@ -76,14 +83,16 @@ const ReportEntryScreen = memo(() => {
 	const authenticatedUserWorkingHour = useAppSelector(
 		authGetAuthenticatedUserWorkingHour
 	)
-	const authenticatedUserWorkType = useAppSelector(
-		authGetAuthenticatedUserWorkType
+	const authenticatedUserName = useAppSelector(authGetAuthenticatedUserName)
+	const authenticatedUserPosition = useAppSelector(
+		authGetAuthenticatedUserPosition
 	)
 	const [modalOptions, setModalOptions] = useState({
 		isDetailOpen: false
 	})
 	const [currentAttendance, setCurrentAttendance] =
 		useState<TAttendance | null>(null)
+	const [reportDate, setReportDate] = useState<string>('')
 
 	/**
 	 * @description Do anything when user come down to this screen
@@ -91,7 +100,9 @@ const ReportEntryScreen = memo(() => {
 	 * @return {void} void
 	 */
 	useEffect(() => {
-		fetchAttendanceList()
+		fetchAttendanceList({
+			params: { clockIn: 0 }
+		})
 	}, [isFocused])
 
 	/**
@@ -109,6 +120,103 @@ const ReportEntryScreen = memo(() => {
 		[]
 	)
 
+	/**
+	 * @description Generate usage metrics
+	 *
+	 * @param
+	 *
+	 * @return {Promise<any>} Promise<any>
+	 */
+	const downloadPdf = useCallback(
+		async (list: TAttendanceResponse['result']) => {
+			try {
+				const fileName = `Attendance-Report-${new Date().getTime()}`
+				const options = {
+					html: `
+      <!DOCTYPE html>
+          <html lang="en">
+            <head>
+              <meta charset="UTF-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <title>Report Comet Chat Data</title>
+            </head>
+            <body>
+							<table style="width: 100%; margin-bottom: 10px;" cellpadding="5">
+                <tr>
+                  <td
+                    style="width: 100%; text-align: center; font-size: 24px; font-weight: bold"
+                  >
+										Report Attendances
+                  </td>
+                </tr>
+              </table>
+
+              <table style="width: 50%; margin-bottom: 10px;" cellpadding="5" border="1">
+                <tr>
+                  <td style="style="border-right-style: hidden;">Name</td>
+                  <td style="border-left-style: hidden; style="border-right-style: hidden;">:</td>
+                  <td style="style="border-left-style: hidden;">${authenticatedUserName}</td>
+                </tr>
+                <tr>
+									<td style="style="border-right-style: hidden;">Position</td>
+									<td style="border-left-style: hidden; style="border-right-style: hidden;">:</td>
+									<td style="style="border-left-style: hidden;">${authenticatedUserPosition}</td>
+                </tr>
+              </table>
+
+              <table style="width: 100%; margin-bottom: 10px;" cellpadding="5" border="1">
+								<thead>
+									<tr>
+										<th style="border-left-style: hidden; style="border-right-style: hidden;">No</th>
+										<th style="border-left-style: hidden; style="border-right-style: hidden;">Clock In</th>
+										<th style="border-left-style: hidden; style="border-right-style: hidden;">Clock Out</th>
+									</tr>
+								</thead>
+								<tbody>
+									${list
+										.map(
+											(attendance, index) => `
+											<tr>
+												<td style="border-left-style: hidden; style="border-right-style: hidden;">${
+													index + 1
+												}</td>
+												<td style="border-left-style: hidden; style="border-right-style: hidden;">${dayjs(
+													attendance.clockIn
+												).format('DD MMM YYYY HH:mm')}</td>
+												<td style="border-left-style: hidden; style="border-right-style: hidden;">${dayjs(
+													attendance.clockIn
+												).format('DD MMM YYYY HH:mm')}</td>
+											</tr>
+										`
+										)
+										.join('')}
+								</tbody>
+              </table>
+            </body>
+          </html>`,
+					fileName,
+					base64: true,
+					directory: 'Download'
+				}
+
+				const file = await RNHTMLtoPDF.convert(options)
+				const downloadPath = `${RNFetchBlob.fs.dirs.DownloadDir?.split(
+					'/Android'
+				)?.[0]}/Download/${fileName}.pdf`
+
+				if (file?.base64) {
+					await RNFetchBlob.fs.writeFile(downloadPath, file.base64, 'base64')
+				}
+
+				// Force open the PDF
+				RNFetchBlob.android.actionViewIntent(downloadPath, 'application/pdf')
+			} catch (err) {
+				return Promise.reject(err)
+			}
+		},
+		[]
+	)
+
 	return (
 		<SafeAreaView className='flex-1 bg-white'>
 			<BaseGreatDayBanner />
@@ -117,22 +225,39 @@ const ReportEntryScreen = memo(() => {
 				<HStack w='$full' alignItems='center' justifyContent='space-between'>
 					<Box w='$1/3'>
 						<FormSelect
-							onChange={() => {
-								//
+							onChange={value => {
+								setReportDate(value)
+
+								if (value === '') {
+									fetchAttendanceList({
+										params: { clockIn: 0 }
+									})
+								} else {
+									fetchAttendanceList({
+										params: { clockIn: value }
+									})
+								}
 							}}
-							value={'10-50'}
+							value={reportDate}
+							defaultValue={reportDate}
 							placeholder='Select Days'
-							emptyItemPlaceholder='No Working Hour Available'
+							emptyItemPlaceholder='No Days Available'
 							data={[
-								{ label: '10-50', value: '10-50' },
-								{ label: '50-100', value: '50-100' },
-								{ label: '100-500', value: '100-500' },
-								{ label: '500-1000', value: '500-1000' }
+								{ label: 'All', value: '' },
+								{ label: '7 Days Ago', value: '7' },
+								{ label: '30 Days Ago', value: '30' }
 							]}
 						/>
 					</Box>
 					<Box w='$1/3'>
-						<BaseButton button={{ size: 'sm', backgroundColor: '$primary400' }}>
+						<BaseButton
+							button={{
+								size: 'sm',
+								backgroundColor: '$primary400',
+								onPress: () =>
+									downloadPdf(attendanceList ? attendanceList.result : [])
+							}}
+						>
 							Unduh PDF
 						</BaseButton>
 					</Box>
@@ -177,9 +302,7 @@ const ReportEntryScreen = memo(() => {
 																authenticatedUserWorkingHour as EWorkingHour
 															)}
 															] -{' '}
-															{renderWorkType(
-																authenticatedUserWorkType as EWorkType
-															)}
+															{renderWorkType(attendance.workType as EWorkType)}
 														</Text>
 													</VStack>
 
@@ -327,7 +450,8 @@ const ReportEntryScreen = memo(() => {
 								>
 									<VStack w='$1/2' space='xs'>
 										<Text fontSize={14} color='#000' fontWeight={'$semibold'}>
-											Clock In
+											Clock In -{' '}
+											{renderWorkType(currentAttendance?.workType as EWorkType)}
 										</Text>
 										<Text fontSize={14} color='#000' fontWeight={'$normal'}>
 											{currentAttendance?.clockIn

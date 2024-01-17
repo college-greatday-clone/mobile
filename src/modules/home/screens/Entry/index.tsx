@@ -46,7 +46,10 @@ import {
 
 // Constants
 import { EHomeStackNavigation } from '@/modules/app/constants/navigation.constant'
-import { EWorkingHour } from '@/modules/app/constants/common.constant'
+import {
+	EWorkType,
+	EWorkingHour
+} from '@/modules/app/constants/common.constant'
 
 // Image Crop Picker
 import ImagePicker, { ImageOrVideo } from 'react-native-image-crop-picker'
@@ -67,7 +70,10 @@ import {
 import { useLazyAttendance_selfQuery } from '@/modules/app/redux'
 
 // Utils
-import { renderWorkingHour } from '@/modules/app/utils/common.util'
+import {
+	renderWorkType,
+	renderWorkingHour
+} from '@/modules/app/utils/common.util'
 
 // Dayjs
 import dayjs from 'dayjs'
@@ -453,7 +459,7 @@ const HomeEntryScreen = memo(() => {
 									{renderWorkingHour(
 										authenticatedUserWorkingHour as EWorkingHour
 									)}
-									]
+									] - {renderWorkType(currentAttendance?.workType as EWorkType)}
 								</Text>
 							</VStack>
 

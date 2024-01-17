@@ -5,7 +5,7 @@ import { memo, useCallback, useState, useMemo } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 // Components
-import { BaseButton, FormTextArea } from '@/modules/app/components'
+import { BaseButton, FormSelect, FormTextArea } from '@/modules/app/components'
 
 // React Navigation
 import { useNavigation, useRoute } from '@react-navigation/native'
@@ -37,7 +37,10 @@ import WarningRedImage from '@/assets/images/warning-red.png'
 
 // Constants
 import { EHomeStackNavigation } from '@/modules/app/constants/navigation.constant'
-import { EWorkingHour } from '@/modules/app/constants/common.constant'
+import {
+	EWorkType,
+	EWorkingHour
+} from '@/modules/app/constants/common.constant'
 
 // Plugins
 import { popupConfirm } from '@/plugins/toast'
@@ -55,6 +58,7 @@ import { useAttendance_attendMutation } from '@/modules/app/redux'
 import {
 	authGetAuthenticatedUserName,
 	authGetAuthenticatedUserPosition,
+	authGetAuthenticatedUserWorkType,
 	authGetAuthenticatedUserWorkingHour
 } from '@/modules/auth/redux'
 
@@ -69,18 +73,14 @@ const nineAm = dayjs().set('hour', 9).set('minute', 0).set('second', 0)
 const fivePm = dayjs().set('hour', 17).set('minute', 0).set('second', 0)
 const sixPm = dayjs().set('hour', 18).set('minute', 0).set('second', 0)
 
-const schemaValidation = yup
-	.object({
-		remark: yup.string().required()
-	})
-	.required()
-
 const HomeAttendScreen = memo(() => {
+	const authenticatedUserWorkType = useAppSelector(
+		authGetAuthenticatedUserWorkType
+	)
 	const navigation = useNavigation<THomeAttendScreenProps['navigation']>()
 	const route = useRoute<THomeAttendScreenProps['route']>()
 	const formMethods = useForm<THomeAttendForm>({
-		resolver: yupResolver(schemaValidation),
-		defaultValues: HOME_ATTEND_FORM,
+		defaultValues: { ...HOME_ATTEND_FORM, workType: authenticatedUserWorkType },
 		mode: 'all'
 	})
 	const [attend] = useAttendance_attendMutation()
@@ -154,7 +154,8 @@ const HomeAttendScreen = memo(() => {
 						body: {
 							photo: route.params.base64,
 							date: route.params.date,
-							remark: form?.remark
+							remark: form?.remark,
+							workType: form?.workType
 						}
 					}).unwrap()
 
@@ -248,6 +249,30 @@ const HomeAttendScreen = memo(() => {
 								</Text>
 							</HStack>
 						)}
+
+						<View width={'$1/2'} display={isClockIn ? 'flex' : 'none'}>
+							<Controller
+								rules={{ required: isClockIn }}
+								control={formMethods.control}
+								name='workType'
+								render={({
+									field: { onChange, value },
+									fieldState: { error }
+								}) => (
+									<FormSelect
+										placeholder='Select Work Type'
+										value={value as EWorkType}
+										onChange={onChange}
+										emptyItemPlaceholder='No Work Type Registered'
+										data={Object.keys(EWorkType).map(workType => ({
+											label: workType,
+											value: workType
+										}))}
+										error={error}
+									/>
+								)}
+							/>
+						</View>
 					</VStack>
 
 					<VStack justifyContent='center' alignItems='center' marginTop={20}>
@@ -273,37 +298,37 @@ const HomeAttendScreen = memo(() => {
 						</View>
 					</VStack>
 
-					{!isClockIn && (
-						<VStack
-							justifyContent='center'
-							alignItems='center'
-							marginTop={20}
-							space='sm'
-						>
-							<Text fontSize={13} fontWeight={'$semibold'}>
-								Task Management
-							</Text>
-							<View width={wp(80)}>
-								<Controller
-									control={formMethods.control}
-									name='remark'
-									render={({
-										field: { onChange, value },
-										fieldState: { error }
-									}) => (
-										<FormTextArea
-											textareaInput={{
-												onChangeText: onChange,
-												value,
-												fontSize: 11
-											}}
-											error={error}
-										/>
-									)}
-								/>
-							</View>
-						</VStack>
-					)}
+					<VStack
+						justifyContent='center'
+						alignItems='center'
+						marginTop={20}
+						space='sm'
+						display={!isClockIn ? 'flex' : 'none'}
+					>
+						<Text fontSize={13} fontWeight={'$semibold'}>
+							Task Management
+						</Text>
+						<View width={wp(80)}>
+							<Controller
+								rules={{ required: !isClockIn ? 'Remark is required' : false }}
+								control={formMethods.control}
+								name='remark'
+								render={({
+									field: { onChange, value },
+									fieldState: { error }
+								}) => (
+									<FormTextArea
+										textareaInput={{
+											onChangeText: onChange,
+											value,
+											fontSize: 11
+										}}
+										error={error}
+									/>
+								)}
+							/>
+						</View>
+					</VStack>
 				</ScrollView>
 
 				<View
@@ -319,10 +344,7 @@ const HomeAttendScreen = memo(() => {
 							marginBottom: 10,
 							rounded: '$lg',
 							width: wp(90),
-							onPress: () =>
-								!isClockIn
-									? formMethods.handleSubmit(onSaveAttendance)()
-									: onSaveAttendance()
+							onPress: () => formMethods.handleSubmit(onSaveAttendance)()
 						}}
 						isLoading={loading.isAttend}
 					>
