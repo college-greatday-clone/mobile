@@ -168,8 +168,8 @@ const ReportEntryScreen = memo(() => {
 								<thead>
 									<tr>
 										<th style="border-left-style: hidden; style="border-right-style: hidden;">No</th>
-										<th style="border-left-style: hidden; style="border-right-style: hidden;">Clock In</th>
-										<th style="border-left-style: hidden; style="border-right-style: hidden;">Clock Out</th>
+										<th style="border-left-style: hidden; style="border-right-style: hidden;">Masuk (Clock-In)</th>
+										<th style="border-left-style: hidden; style="border-right-style: hidden;">Keluar (Clock-Out)</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -222,7 +222,7 @@ const ReportEntryScreen = memo(() => {
 			<BaseGreatDayBanner />
 
 			<View paddingHorizontal={20}>
-				<HStack w='$full' alignItems='center' justifyContent='space-between'>
+				{/* <HStack w='$full' alignItems='center' justifyContent='space-between'>
 					<Box w='$1/3'>
 						<FormSelect
 							onChange={value => {
@@ -261,7 +261,7 @@ const ReportEntryScreen = memo(() => {
 							Unduh PDF
 						</BaseButton>
 					</Box>
-				</HStack>
+				</HStack> */}
 
 				<View h={hp(75)}>
 					<ScrollView
@@ -313,7 +313,7 @@ const ReportEntryScreen = memo(() => {
 																fontSize={14}
 																fontWeight={'$bold'}
 															>
-																Clock In
+																Masuk (Clock-In)
 															</Text>
 															<Text
 																color='#000'
@@ -334,7 +334,7 @@ const ReportEntryScreen = memo(() => {
 																fontSize={14}
 																fontWeight={'$bold'}
 															>
-																Clock Out
+																Keluar (Clock-Out)
 															</Text>
 															<Text
 																color='#000'
@@ -388,7 +388,7 @@ const ReportEntryScreen = memo(() => {
 																fontSize={14}
 																fontWeight={'$bold'}
 															>
-																Task Management
+																Apa Yang Sudah Dikerjakan Hari Ini
 															</Text>
 															<Text color='#000' fontSize={14}>
 																{attendance?.clockOutRemark}
@@ -412,12 +412,12 @@ const ReportEntryScreen = memo(() => {
 														/>
 														<Text fontSize={12} color='$red400'>
 															{attendance?.isLateClockIn &&
-																'You are late for work'}
+																'Anda telat masuk (clock-in)'}
 															{attendance?.isLateClockIn &&
 																attendance?.isLateClockOut &&
-																' and also '}
+																' dan juga '}
 															{attendance?.isLateClockOut &&
-																'You to quick to clock out'}
+																'Anda terlalu cepat keluar (clock-out)'}
 														</Text>
 													</HStack>
 												</VStack>
@@ -450,7 +450,7 @@ const ReportEntryScreen = memo(() => {
 								>
 									<VStack w='$1/2' space='xs'>
 										<Text fontSize={14} color='#000' fontWeight={'$semibold'}>
-											Clock In -{' '}
+											Masuk (Clock-In) -{' '}
 											{renderWorkType(currentAttendance?.workType as EWorkType)}
 										</Text>
 										<Text fontSize={14} color='#000' fontWeight={'$normal'}>
@@ -509,7 +509,7 @@ const ReportEntryScreen = memo(() => {
 												source={{
 													uri: `data:image/jpeg;base64,${currentAttendance?.clockInPhoto}`
 												}}
-												alt='Clock In Photo'
+												alt='Masuk (Clock-In) Photo'
 												h={60}
 												w={60}
 												objectFit='contain'
@@ -536,7 +536,7 @@ const ReportEntryScreen = memo(() => {
 								>
 									<VStack w='$1/2' space='xs'>
 										<Text fontSize={14} color='#000' fontWeight={'$semibold'}>
-											Clock Out
+											Keluar (Clock-Out)
 										</Text>
 										<Text fontSize={14} color='#000' fontWeight={'$normal'}>
 											{currentAttendance?.clockOut
@@ -566,7 +566,7 @@ const ReportEntryScreen = memo(() => {
 													alt='Warning Late For Work'
 												/>
 												<Text fontSize={12} color='$red400'>
-													You clock out to quick
+													Anda terlalu cepat {'\n'}keluar (clock-out)
 												</Text>
 											</HStack>
 										)}
@@ -582,7 +582,7 @@ const ReportEntryScreen = memo(() => {
 												source={{
 													uri: `data:image/jpeg;base64,${currentAttendance?.clockOutPhoto}`
 												}}
-												alt='Clock In Photo'
+												alt='Masuk (Clock-In) Photo'
 												h={60}
 												w={60}
 												objectFit='contain'
@@ -601,7 +601,7 @@ const ReportEntryScreen = memo(() => {
 								{currentAttendance?.clockOutRemark && (
 									<VStack space='xs'>
 										<Text fontSize={14} fontWeight={'$extrabold'} color='#000'>
-											Task Management:
+											Apa Yang Sudah Dikerjakan Hari Ini:
 										</Text>
 										<Text fontSize={13} color='#000'>
 											{currentAttendance?.clockOutRemark}

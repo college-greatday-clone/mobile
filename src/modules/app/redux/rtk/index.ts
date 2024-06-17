@@ -32,6 +32,8 @@ import {
 // Init Mutex
 const mutex = new Mutex()
 
+console.log('API_BASE', API_BASE)
+
 const baseQuery = fetchBaseQuery({
 	baseUrl: API_BASE,
 	prepareHeaders(headers, { getState }) {

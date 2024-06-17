@@ -42,8 +42,11 @@ const FormSelect = memo(
 					defaultValue={defaultValue}
 					isInvalid={error !== undefined}
 				>
-					<SelectTrigger variant={variant || 'underlined'} size='md'>
-						<SelectInput placeholder={placeholder || 'Select Option'} />
+					<SelectTrigger variant={(variant as never) || 'underlined'} size='md'>
+						<SelectInput
+							placeholder={placeholder || 'Select Option'}
+							textAlign='center'
+						/>
 						<SelectIcon>
 							<Icon as={ChevronDownIcon} />
 						</SelectIcon>

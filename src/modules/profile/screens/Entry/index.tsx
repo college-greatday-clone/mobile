@@ -31,7 +31,7 @@ const ProfileScreen = memo(() => {
 							onPress: () => dispatch(auth_HANDLE_LOGOUT())
 						}}
 					>
-						Logout
+						Keluar
 					</BaseButton>
 				</Box>
 			</View>

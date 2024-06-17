@@ -217,7 +217,7 @@ const HomeEntryScreen = memo(() => {
 											color='$primary400'
 											fontWeight={'$semibold'}
 										>
-											Hallo,
+											Halo,
 										</Text>
 										<Text fontSize={20} color='#000' fontWeight={'$semibold'}>
 											{authenticatedUserName}
@@ -230,11 +230,10 @@ const HomeEntryScreen = memo(() => {
 										borderRadius={8}
 									>
 										<Text fontSize={12} color='#000'>
-											Regular Office Hour [
+											Jam Kerja{' '}
 											{renderWorkingHour(
 												authenticatedUserWorkingHour as EWorkingHour
 											)}
-											]
 										</Text>
 									</Box>
 								</VStack>
@@ -248,7 +247,7 @@ const HomeEntryScreen = memo(() => {
 								marginBottom={8}
 							>
 								<Text fontSize={18} color='#000' fontWeight={'$semibold'}>
-									Attendance
+									Kehadiran
 								</Text>
 							</HStack>
 
@@ -272,7 +271,7 @@ const HomeEntryScreen = memo(() => {
 										borderBottomColor={'#ebebeb'}
 									>
 										<Text fontSize={14} color='#000' fontWeight={'$medium'}>
-											Today ({dayjs().format('DD MMM YYYY')})
+											Hari Ini ({dayjs().format('DD MMM YYYY')})
 										</Text>
 									</Box>
 
@@ -287,7 +286,7 @@ const HomeEntryScreen = memo(() => {
 													gap={12}
 												>
 													<Text fontSize={14} color='#000'>
-														Clock in
+														Masuk (Clock-In)
 													</Text>
 													<Text
 														fontSize={14}
@@ -317,7 +316,7 @@ const HomeEntryScreen = memo(() => {
 													gap={12}
 												>
 													<Text fontSize={14} color='#000'>
-														Clock out
+														Keluar (Clock-Out)
 													</Text>
 													<Text
 														fontSize={14}
@@ -376,7 +375,7 @@ const HomeEntryScreen = memo(() => {
 													gap={12}
 												>
 													<Text fontSize={14} color='#000'>
-														Clock in
+														Masuk (Clock-In)
 													</Text>
 													<Text
 														fontSize={14}
@@ -406,7 +405,7 @@ const HomeEntryScreen = memo(() => {
 													gap={12}
 												>
 													<Text fontSize={14} color='#000'>
-														Clock out
+														Keluar (Clock-Out)
 													</Text>
 													<Text
 														fontSize={14}
@@ -455,7 +454,7 @@ const HomeEntryScreen = memo(() => {
 									{authenticatedUserName}
 								</Text>
 								<Text fontSize={14} color='#000' fontWeight={'$normal'}>
-									Regular Office Hour [
+									Jam Kerja [
 									{renderWorkingHour(
 										authenticatedUserWorkingHour as EWorkingHour
 									)}
@@ -471,7 +470,7 @@ const HomeEntryScreen = memo(() => {
 								>
 									<VStack w='$1/2' space='xs'>
 										<Text fontSize={14} color='#000' fontWeight={'$semibold'}>
-											Clock In
+											Masuk (Clock-In)
 										</Text>
 										<Text fontSize={14} color='#000' fontWeight={'$normal'}>
 											{currentAttendance?.clockIn
@@ -517,7 +516,7 @@ const HomeEntryScreen = memo(() => {
 												source={{
 													uri: `data:image/jpeg;base64,${currentAttendance?.clockInPhoto}`
 												}}
-												alt='Clock In Photo'
+												alt='Masuk (Clock-In) Photo'
 												h={60}
 												w={60}
 												objectFit='contain'
@@ -544,7 +543,7 @@ const HomeEntryScreen = memo(() => {
 								>
 									<VStack w='$1/2' space='xs'>
 										<Text fontSize={14} color='#000' fontWeight={'$semibold'}>
-											Clock Out
+											Keluar (Clock-Out)
 										</Text>
 										<Text fontSize={14} color='#000' fontWeight={'$normal'}>
 											{currentAttendance?.clockOut
@@ -574,7 +573,7 @@ const HomeEntryScreen = memo(() => {
 													alt='Warning Late For Work'
 												/>
 												<Text fontSize={12} color='$red400'>
-													You clock out to quick
+													Anda Keluar (Clock-Out) {'\n'}Terlalu Cepat
 												</Text>
 											</HStack>
 										)}
@@ -590,7 +589,7 @@ const HomeEntryScreen = memo(() => {
 												source={{
 													uri: `data:image/jpeg;base64,${currentAttendance?.clockOutPhoto}`
 												}}
-												alt='Clock In Photo'
+												alt='Masuk (Clock-In) Photo'
 												h={60}
 												w={60}
 												objectFit='contain'
@@ -609,7 +608,7 @@ const HomeEntryScreen = memo(() => {
 								{currentAttendance?.clockOutRemark && (
 									<VStack space='xs'>
 										<Text fontSize={14} fontWeight={'$extrabold'} color='#000'>
-											Task Management:
+											Apa Yang Sudah Dikerjakan Hari Ini:
 										</Text>
 										<Text fontSize={13} color='#000'>
 											{currentAttendance?.clockOutRemark}
@@ -639,7 +638,11 @@ const HomeEntryScreen = memo(() => {
 						onPress: onAttend
 					}}
 				>
-					{isFullyAttend ? 'FullyAttend' : isClockIn ? 'Clock In' : 'Clock Out'}
+					{isFullyAttend
+						? 'Presensi Sudah Terpenuhi'
+						: isClockIn
+							? 'Masuk (Clock-In)'
+							: 'Keluar (Clock-Out)'}
 				</BaseButton>
 			</HStack>
 		</SafeAreaView>

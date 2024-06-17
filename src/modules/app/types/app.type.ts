@@ -30,19 +30,13 @@ export type TAttendanceApproval = {
 	status: string
 	createdAt: string
 	attendance: TAttendance & {
-		createdBy: {
+		user: {
 			id: string
 			workingHour: string
 			workType: string
 			position: {
 				id: string
 				name: string
-			}
-			user: {
-				id: string
-				name: string
-				email: string
-				role: string
 			}
 		}
 	}

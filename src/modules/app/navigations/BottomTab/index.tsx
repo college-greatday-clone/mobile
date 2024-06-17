@@ -52,24 +52,6 @@ const AppRootBottomTabNavigation = () => {
 				authenticatedUserRole as ERole
 			) && (
 				<Tab.Screen
-					name={EAppBottomTabNavigation.OFFICER}
-					component={OfficerStackNavigation}
-					options={{
-						tabBarIconStyle: { display: 'none' },
-						tabBarLabel: ({ focused }) => (
-							<View flex={1} justifyContent='center' alignItems='center'>
-								<Text fontSize={12} color={focused ? '$primary400' : '#000'}>
-									Officer
-								</Text>
-							</View>
-						)
-					}}
-				/>
-			)}
-			{[ERole.User, ERole.HRManager].includes(
-				authenticatedUserRole as ERole
-			) && (
-				<Tab.Screen
 					name={EAppBottomTabNavigation.REPORT}
 					component={ReportStackNavigation}
 					options={{
@@ -84,38 +66,7 @@ const AppRootBottomTabNavigation = () => {
 					}}
 				/>
 			)}
-			{[ERole.GreatDayAdmin].includes(authenticatedUserRole as ERole) && (
-				<Tab.Screen
-					name={EAppBottomTabNavigation.COMPANY}
-					component={CompanyStackNavigation}
-					options={{
-						tabBarIconStyle: { display: 'none' },
-						tabBarLabel: ({ focused }) => (
-							<View flex={1} justifyContent='center' alignItems='center'>
-								<Text fontSize={12} color={focused ? '$primary400' : '#000'}>
-									Company
-								</Text>
-							</View>
-						)
-					}}
-				/>
-			)}
-			{(isHumanResource || [''].includes(authenticatedUserRole as ERole)) && (
-				<Tab.Screen
-					name={EAppBottomTabNavigation.EMPLOYEE}
-					component={EmployeeStackNavigation}
-					options={{
-						tabBarIconStyle: { display: 'none' },
-						tabBarLabel: ({ focused }) => (
-							<View flex={1} justifyContent='center' alignItems='center'>
-								<Text fontSize={12} color={focused ? '$primary400' : '#000'}>
-									Employee
-								</Text>
-							</View>
-						)
-					}}
-				/>
-			)}
+
 			{(isHumanResource ||
 				[ERole.User, ERole.HRManager].includes(
 					authenticatedUserRole as ERole
@@ -128,7 +79,7 @@ const AppRootBottomTabNavigation = () => {
 						tabBarLabel: ({ focused }) => (
 							<View flex={1} justifyContent='center' alignItems='center'>
 								<Text fontSize={12} color={focused ? '$primary400' : '#000'}>
-									Home
+									Beranda
 								</Text>
 							</View>
 						)
@@ -145,7 +96,7 @@ const AppRootBottomTabNavigation = () => {
 						tabBarLabel: ({ focused }) => (
 							<View flex={1} justifyContent='center' alignItems='center'>
 								<Text fontSize={12} color={focused ? '$primary400' : '#000'}>
-									Notification
+									Notifikasi
 								</Text>
 							</View>
 						)
@@ -160,7 +111,7 @@ const AppRootBottomTabNavigation = () => {
 					tabBarLabel: ({ focused }) => (
 						<View flex={1} justifyContent='center' alignItems='center'>
 							<Text fontSize={12} color={focused ? '$primary400' : '#000'}>
-								Profile
+								Profil
 							</Text>
 						</View>
 					)

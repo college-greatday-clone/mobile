@@ -21,9 +21,9 @@ export const renderWorkingHour = (workingHour: EWorkingHour): string => {
 export const renderWorkType = (workType: EWorkType): string => {
 	switch (workType) {
 		case EWorkType.WorkFromHome:
-			return 'WFH'
+			return 'Bekerja Di Rumah'
 		case EWorkType.WorkFromOffice:
-			return 'WFO'
+			return 'Bekerja Di Kantor'
 		default:
 			return ''
 	}

@@ -24,10 +24,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native'
 import { TNotificationListScreenProps } from './types'
 
 // React Native Responsive Screen
-import {
-	heightPercentageToDP as hp,
-	widthPercentageToDP as wp
-} from 'react-native-responsive-screen'
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen'
 
 // Assets
 import WarningRedImage from '@/assets/images/warning-red.png'
@@ -105,12 +102,12 @@ const NotificationListScreen = memo(() => {
 					if (type === 'approve')
 						await approve({
 							params: { id },
-							body: { remark: 'Approved!' }
+							body: { remark: 'Disetujui!' }
 						}).unwrap()
 					if (type === 'reject')
 						await reject({
 							params: { id },
-							body: { remark: 'Rejected!' }
+							body: { remark: 'Ditolak!' }
 						}).unwrap()
 
 					fetchAttendanceApprovalList()
@@ -130,7 +127,7 @@ const NotificationListScreen = memo(() => {
 
 			<View paddingHorizontal={20}>
 				<Text fontSize={16} color={'#000'} fontWeight={'$extrabold'}>
-					Approval Attendance
+					Persetujuan Kehadiran
 				</Text>
 
 				<View h={hp(75)}>
@@ -160,10 +157,7 @@ const NotificationListScreen = memo(() => {
 																fontSize={14}
 																fontWeight={'$bold'}
 															>
-																{
-																	attendanceApproval.attendance.createdBy.user
-																		.name
-																}
+																{attendanceApproval.attendance.user.name}
 															</Text>
 															<Text
 																color='#000'
@@ -172,8 +166,8 @@ const NotificationListScreen = memo(() => {
 															>
 																Employee -{' '}
 																{
-																	attendanceApproval.attendance.createdBy
-																		.position.name
+																	attendanceApproval.attendance.user.position
+																		.name
 																}
 															</Text>
 															<Text
@@ -183,7 +177,7 @@ const NotificationListScreen = memo(() => {
 															>
 																Regular Office Hour [
 																{renderWorkingHour(
-																	attendanceApproval.attendance.createdBy
+																	attendanceApproval.attendance.user
 																		.workingHour as EWorkingHour
 																)}
 																]
@@ -205,7 +199,7 @@ const NotificationListScreen = memo(() => {
 																			]
 																		}`
 																	}}
-																	alt='Clock In Photo'
+																	alt='Masuk (Clock-In) Photo'
 																	h={60}
 																	w={60}
 																	objectFit='contain'
@@ -230,8 +224,8 @@ const NotificationListScreen = memo(() => {
 															fontWeight={'$bold'}
 														>
 															{attendanceApproval.type === 'ClockIn'
-																? 'Clock In'
-																: 'Clock Out'}
+																? 'Masuk (Clock-In)'
+																: 'Keluar (Clock-Out)'}
 														</Text>
 														<HStack
 															w='$full'
@@ -274,7 +268,7 @@ const NotificationListScreen = memo(() => {
 
 																			{attendanceApproval.attendance
 																				.isLateClockOut &&
-																				'To quick to clock out'}
+																				'Terlalu Cepat Keluar (Clock-Out)'}
 																		</Text>
 																	</HStack>
 																</Box>
@@ -307,7 +301,7 @@ const NotificationListScreen = memo(() => {
 																{attendanceApproval.status}
 															</Text>
 															<Text fontSize={14}>
-																Remark: {attendanceApproval.remark}
+																Catatan: {attendanceApproval.remark}
 															</Text>
 														</VStack>
 													</HStack>
@@ -338,7 +332,7 @@ const NotificationListScreen = memo(() => {
 																}}
 																isLoading={loading.isApproval}
 															>
-																Reject
+																Tolak
 															</BaseButton>
 														</Box>
 														<Box w='$1/2'>
@@ -358,7 +352,37 @@ const NotificationListScreen = memo(() => {
 																}}
 																isLoading={loading.isApproval}
 															>
-																Approve
+																Setuju
+															</BaseButton>
+														</Box>
+													</HStack>
+												)}
+
+												{attendanceApproval.status === 'Rejected' && (
+													<HStack
+														w='$full'
+														alignItems='center'
+														justifyContent='space-between'
+														space='sm'
+													>
+														<Box w='$full'>
+															<BaseButton
+																button={{
+																	height: 30,
+																	backgroundColor: '$primary400',
+																	onPress: () =>
+																		approvalHandler(
+																			'approve',
+																			attendanceApproval.id
+																		)
+																}}
+																buttonText={{
+																	color: '#fff',
+																	fontSize: 12
+																}}
+																isLoading={loading.isApproval}
+															>
+																Setuju
 															</BaseButton>
 														</Box>
 													</HStack>

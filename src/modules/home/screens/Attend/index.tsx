@@ -47,8 +47,6 @@ import { popupConfirm } from '@/plugins/toast'
 
 // React Hook Form
 import { Controller, FormProvider, useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import * as yup from 'yup'
 
 // Constants
 import { HOME_ATTEND_FORM } from '@/modules/home/constants/home.constant'
@@ -80,7 +78,10 @@ const HomeAttendScreen = memo(() => {
 	const navigation = useNavigation<THomeAttendScreenProps['navigation']>()
 	const route = useRoute<THomeAttendScreenProps['route']>()
 	const formMethods = useForm<THomeAttendForm>({
-		defaultValues: { ...HOME_ATTEND_FORM, workType: authenticatedUserWorkType },
+		defaultValues: {
+			...HOME_ATTEND_FORM,
+			workType: authenticatedUserWorkType as EWorkType | undefined
+		},
 		mode: 'all'
 	})
 	const [attend] = useAttendance_attendMutation()
@@ -188,7 +189,7 @@ const HomeAttendScreen = memo(() => {
 						>
 							<Icon as={ChevronLeftIcon} color='#fff' size='xl' />
 							<Text fontSize={18} fontWeight={'$medium'} color='#fff'>
-								{isClockIn ? 'Clock In' : 'Clock Out'}
+								{isClockIn ? 'Masuk (Clock-In)' : 'Keluar (Clock-Out)'}
 							</Text>
 						</TouchableOpacity>
 					</HStack>
@@ -231,6 +232,7 @@ const HomeAttendScreen = memo(() => {
 							lineHeight={'$md'}
 							color={'$primary400'}
 							fontWeight={'$bold'}
+							paddingVertical={5}
 						>
 							{dayjs(route.params.date).format('HH:mm')}
 						</Text>
@@ -244,8 +246,8 @@ const HomeAttendScreen = memo(() => {
 								/>
 								<Text fontSize={12} color='$red400'>
 									{isClockIn
-										? 'You are Late for Work'
-										: 'You to quick to clock out'}
+										? 'Anda telat untuk masuk (clock-in)'
+										: 'Anda terlalu cepat untuk keluar (clock-out)'}
 								</Text>
 							</HStack>
 						)}
@@ -261,11 +263,18 @@ const HomeAttendScreen = memo(() => {
 								}) => (
 									<FormSelect
 										placeholder='Select Work Type'
-										value={value as EWorkType}
+										value={
+											value === 'WorkFromHome'
+												? 'Bekerja Di Rumah'
+												: 'Bekerja Di Kantor'
+										}
 										onChange={onChange}
 										emptyItemPlaceholder='No Work Type Registered'
 										data={Object.keys(EWorkType).map(workType => ({
-											label: workType,
+											label:
+												workType === 'WorkFromHome'
+													? 'Bekerja Di Rumah'
+													: 'Bekerja Di Kantor',
 											value: workType
 										}))}
 										error={error}
@@ -306,7 +315,7 @@ const HomeAttendScreen = memo(() => {
 						display={!isClockIn ? 'flex' : 'none'}
 					>
 						<Text fontSize={13} fontWeight={'$semibold'}>
-							Task Management
+							Apa Yang Sudah Dikerjakan Hari Ini
 						</Text>
 						<View width={wp(80)}>
 							<Controller
@@ -348,7 +357,7 @@ const HomeAttendScreen = memo(() => {
 						}}
 						isLoading={loading.isAttend}
 					>
-						Save {isClockIn ? 'Clock In' : 'Clock Out'}
+						Konfirmasi {isClockIn ? 'Masuk (Clock-In)' : 'Keluar (Clock-Out)'}
 					</BaseButton>
 				</View>
 			</SafeAreaView>

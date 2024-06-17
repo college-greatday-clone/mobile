@@ -6,8 +6,7 @@ import {
 
 export const AUTH_LOGIN_FORM: TAuthLoginForm = {
 	email: '',
-	password: '',
-	companyId: ''
+	password: ''
 }
 
 export const AUTH_REGISTER_COMPANY_FORM: TAuthRegisterCompanyForm = {

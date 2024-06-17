@@ -9,7 +9,6 @@ import { IAppResponse } from '@/modules/app/types'
 export type TAuthLoginForm = {
 	email: string
 	password: string
-	companyId: string
 }
 
 export type TAuthRegisterCompanyForm = {
@@ -84,15 +83,40 @@ export type TAuthCompanyUser = {
 	}[]
 }
 
-export type TAuthAuthenticatedUser = {
+export interface Root {
 	id: string
 	name: string
 	email: string
-	role: ERole
-	createdAt: string
-	updatedAt: string
-	companyUsers: TAuthCompanyUser[]
+	role: string
+	isPic: boolean
+	workType: string
+	workingHour: string
+	position: Position
+	company: Company
+	personsInCharge: PersonsInCharge[]
+	personsUnderMe: PersonsInCharge[]
 }
+
+export interface Position {
+	id: string
+	name: string
+}
+
+export interface Company {
+	id: string
+	name: string
+}
+
+export interface PersonsInCharge {
+	userPic: UserPic
+}
+
+export interface UserPic {
+	id: string
+	name: string
+}
+
+export type TAuthAuthenticatedUser = Root
 
 export type TAuthLoginResponse = IAppResponse<{
 	token: string

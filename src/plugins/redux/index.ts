@@ -58,13 +58,6 @@ const store = configureStore({
 			// .concat(middlewareError)
 			.concat(emptySplitApi.middleware)
 
-		// Flipper debugger (for development purpose only)
-		if (__DEV__) {
-			// eslint-disable-next-line
-			const createDebugger = require('redux-flipper').default
-			middlewares.push(createDebugger())
-		}
-
 		return middlewares
 	}
 })

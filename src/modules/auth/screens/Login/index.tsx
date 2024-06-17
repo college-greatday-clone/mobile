@@ -1,5 +1,5 @@
 // React
-import { memo, useState, useEffect, useMemo, useCallback } from 'react'
+import { memo, useState, useCallback } from 'react'
 
 // Safe Area Context
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -11,7 +11,7 @@ import { View, Text } from 'react-native'
 import GreatDayLogo from '@/assets/images/great-day-logo.png'
 
 // React Hook Form
-import { Controller, FormProvider, useForm, useWatch } from 'react-hook-form'
+import { Controller, FormProvider, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as yup from 'yup'
 
@@ -26,22 +26,17 @@ import { TAuthLoginScreenProps } from '@/modules/auth/screens/Login/types'
 // Constants
 import { AUTH_LOGIN_FORM } from '@/modules/auth/constants/auth.constant'
 import { BaseButton } from '@/modules/app/components/base'
-import { EAuthStackNavigation } from '@/modules/app/constants/navigation.constant.ts'
 
 // React Navigation
 import { useNavigation } from '@react-navigation/native'
 
 // Redux
 import {
-	useLazyAuth_companyListQuery,
 	useAuth_loginMutation,
 	auth_HANDLE_TOKENS,
 	auth_HANDLE_AUTHENTICATED_USER,
 	useLazyAuth_meQuery
 } from '@/modules/auth/redux'
-
-// Lodash
-import debounce from 'lodash.debounce'
 
 // Plugins
 import { useAppDispatch } from '@/plugins/redux'
@@ -49,8 +44,7 @@ import { useAppDispatch } from '@/plugins/redux'
 const schemaValidation = yup
 	.object({
 		email: yup.string().email().required('Email is required'),
-		password: yup.string().required('Password is required'),
-		companyId: yup.string().required('Company is required')
+		password: yup.string().required('Password is required')
 	})
 	.required()
 
@@ -62,25 +56,6 @@ const AuthLoginScreen = memo(() => {
 	})
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 	const navigation = useNavigation<TAuthLoginScreenProps>()
-	const watchEmail = useWatch({ control: formMethods.control, name: 'email' })
-	const [
-		fetchCompanyList,
-		{
-			data: companyList,
-			isLoading: isCompanyListLoading,
-			isFetching: isCompanyListFetching
-		}
-	] = useLazyAuth_companyListQuery()
-	const _companyList = useMemo((): { label: string; value: string }[] => {
-		if (companyList) {
-			return companyList.result.map(company => ({
-				label: company.name,
-				value: company.id
-			}))
-		} else {
-			return []
-		}
-	}, [companyList])
 	const [loading, setLoading] = useState({
 		isLogin: false
 	})
@@ -102,28 +77,6 @@ const AuthLoginScreen = memo(() => {
 		},
 		[]
 	)
-
-	/**
-	 * @description Get company list
-	 *
-	 * @param {string} email
-	 *
-	 * @return {void} void
-	 */
-	const getCompanyList = debounce((email: string): void => {
-		fetchCompanyList({ params: { email } }).unwrap()
-	}, 900)
-
-	/**
-	 * @description Watch email change
-	 *
-	 * @return {void} void
-	 */
-	useEffect(() => {
-		if (watchEmail !== '') {
-			getCompanyList(watchEmail)
-		}
-	}, [watchEmail])
 
 	/**
 	 * @description Handle submit
@@ -208,20 +161,6 @@ const AuthLoginScreen = memo(() => {
 							/>
 						)}
 					/>
-					<Controller
-						control={formMethods.control}
-						name='companyId'
-						render={({ field: { value, onChange }, fieldState }) => (
-							<FormSelect
-								placeholder='Select Company'
-								value={value}
-								onChange={onChange}
-								error={fieldState?.error}
-								emptyItemPlaceholder='No Company Registered'
-								data={_companyList}
-							/>
-						)}
-					/>
 
 					<View className='mt-8 flex flex-col'>
 						<BaseButton
@@ -230,31 +169,9 @@ const AuthLoginScreen = memo(() => {
 								isDisabled: !formMethods.formState.isValid,
 								onPress: () => formMethods.handleSubmit(onSubmit)()
 							}}
-							isLoading={
-								isCompanyListLoading || isCompanyListFetching || loading.isLogin
-							}
+							isLoading={loading.isLogin}
 						>
-							Login
-						</BaseButton>
-
-						<View className='flex flex-col items-center justify-center my-5'>
-							<Text className='text-[12px] text-[#888]'>Or</Text>
-							<Text className='text-[12px] text-[#000] mt-2'>
-								Do you want register as a Company?
-							</Text>
-						</View>
-
-						<BaseButton
-							button={{
-								backgroundColor: '$primary400',
-								onPress: () => {
-									navigation.navigate(
-										EAuthStackNavigation.AUTH_REGISTER_COMPANY
-									)
-								}
-							}}
-						>
-							Register Here
+							Masuk
 						</BaseButton>
 					</View>
 				</FormProvider>

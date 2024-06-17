@@ -8,9 +8,6 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { IRootState } from '@/plugins/redux/reducer'
 import { TAuthAuthenticatedUser } from '@/modules/auth/types/auth.type'
 
-// Constants
-import { ERole } from '@/modules/app/constants/common.constant'
-
 const initialState: TAuthSliceState = {
 	tokens: {
 		token: '',
@@ -60,32 +57,18 @@ export const authGetAuthenticatedUserName = (state: IRootState) =>
 export const authGetAuthenticatedUserRole = (state: IRootState) =>
 	state.auth.authenticatedUser?.role
 export const authGetAuthenticatedUserIsHumanResource = (state: IRootState) =>
-	state.auth.authenticatedUser?.companyUsers?.find(
-		companyUser => companyUser?.isActive
-	)?.position?.name === 'Human Resource'
+	state.auth.authenticatedUser?.position?.name === 'Human Resource'
 export const authGetAuthenticatedUserIsPic = (state: IRootState) =>
-	state.auth.authenticatedUser?.companyUsers?.find(
-		companyUser => companyUser?.isActive
-	)?.isPic
+	state.auth.authenticatedUser?.isPic
 export const authGetAuthenticatedUserCompanyName = (state: IRootState) =>
-	state.auth.authenticatedUser?.companyUsers?.find(
-		companyUser => companyUser?.isActive
-	)?.company?.name
+	state.auth.authenticatedUser?.company?.name
 export const authGetAuthenticatedUserWorkingHour = (state: IRootState) =>
-	state.auth.authenticatedUser?.companyUsers?.find(
-		companyUser => companyUser?.isActive
-	)?.workingHour
+	state.auth.authenticatedUser?.workingHour
 export const authGetAuthenticatedUserWorkType = (state: IRootState) =>
-	state.auth.authenticatedUser?.companyUsers?.find(
-		companyUser => companyUser?.isActive
-	)?.workType
+	state.auth.authenticatedUser?.workType
 export const authGetAuthenticatedUserPicList = (state: IRootState) =>
-	state.auth.authenticatedUser?.companyUsers?.find(
-		companyUser => companyUser?.isActive
-	)?.companyPersonInCharges || []
+	state.auth.authenticatedUser?.personsInCharge || []
 export const authGetAuthenticatedUserPosition = (state: IRootState) =>
-	state.auth.authenticatedUser?.companyUsers?.find(
-		companyUser => companyUser?.isActive
-	)?.position?.name
+	state.auth.authenticatedUser?.position?.name
 
 export default authSlice.reducer
