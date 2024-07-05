@@ -210,7 +210,19 @@ const HomeEntryScreen = memo(() => {
 										borderRadius={'$full'}
 										height={60}
 										w={60}
-									/>
+									>
+										<Box
+											height={60}
+											display='flex'
+											alignItems='center'
+											flexDirection='column'
+											justifyContent='center'
+										>
+											<Text fontWeight='$bold' fontSize={24}>
+												{authenticatedUserName?.[0]}
+											</Text>
+										</Box>
+									</Box>
 									<HStack alignItems='center' space='xs'>
 										<Text
 											fontSize={20}
@@ -359,7 +371,7 @@ const HomeEntryScreen = memo(() => {
 										borderBottomColor={'#ebebeb'}
 									>
 										<Text fontSize={14} color='#000' fontWeight={'$medium'}>
-											Yesterday (
+											Kemarin (
 											{dayjs().subtract(1, 'day').format('DD MMM YYYY')})
 										</Text>
 									</Box>
@@ -500,7 +512,7 @@ const HomeEntryScreen = memo(() => {
 													alt='Warning Late For Work'
 												/>
 												<Text fontSize={12} color='$red400'>
-													You are Late for Work
+													Anda terlambat untuk bekerja
 												</Text>
 											</HStack>
 										)}

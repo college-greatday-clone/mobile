@@ -52,6 +52,25 @@ const AppRootBottomTabNavigation = () => {
 				authenticatedUserRole as ERole
 			) && (
 				<Tab.Screen
+					name={EAppBottomTabNavigation.OFFICER}
+					component={OfficerStackNavigation}
+					options={{
+						tabBarIconStyle: { display: 'none' },
+						tabBarLabel: ({ focused }) => (
+							<View flex={1} justifyContent='center' alignItems='center'>
+								<Text fontSize={12} color={focused ? '$primary400' : '#000'}>
+									PIC
+								</Text>
+							</View>
+						)
+					}}
+				/>
+			)}
+
+			{[ERole.User, ERole.HRManager].includes(
+				authenticatedUserRole as ERole
+			) && (
+				<Tab.Screen
 					name={EAppBottomTabNavigation.REPORT}
 					component={ReportStackNavigation}
 					options={{

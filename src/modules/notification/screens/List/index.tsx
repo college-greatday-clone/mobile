@@ -258,13 +258,13 @@ const NotificationListScreen = memo(() => {
 																		/>
 																		<Text fontSize={12} color='$red400'>
 																			{attendanceApproval.attendance
-																				.isLateClockIn && 'Late for work'}
+																				.isLateClockIn && 'Telat'}
 
 																			{attendanceApproval.attendance
 																				.isLateClockIn &&
 																				attendanceApproval.attendance
 																					.isLateClockOut &&
-																				' and '}
+																				' dan '}
 
 																			{attendanceApproval.attendance
 																				.isLateClockOut &&

@@ -493,7 +493,7 @@ const ReportEntryScreen = memo(() => {
 													alt='Warning Late For Work'
 												/>
 												<Text fontSize={12} color='$red400'>
-													You are Late for Work
+													Anda terlambat untuk bekerja
 												</Text>
 											</HStack>
 										)}

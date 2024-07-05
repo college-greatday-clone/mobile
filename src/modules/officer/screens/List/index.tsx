@@ -40,11 +40,11 @@ const OfficerListScreen = memo(() => {
 							fontSize={16}
 							marginBottom={10}
 						>
-							Your Projects Officers
+							Penanggung Jawab
 						</Text>
 
 						{authenticatedUserPicList.map(pic => (
-							<View marginBottom={10} key={pic.companyUserPersonInCharge.id}>
+							<View marginBottom={10} key={pic.userPic.id}>
 								<BaseBox>
 									<HStack space='md' alignItems='center'>
 										<Box
@@ -52,13 +52,25 @@ const OfficerListScreen = memo(() => {
 											h={40}
 											borderRadius={'$full'}
 											backgroundColor={'#D9D9D9'}
-										/>
+										>
+											<Box
+												h={40}
+												display='flex'
+												alignItems='center'
+												justifyContent='center'
+												flexDirection='column'
+											>
+												<Text fontSize={16} fontWeight={'$bold'}>
+													{pic.userPic.name[0]}
+												</Text>
+											</Box>
+										</Box>
 										<VStack>
 											<Text fontSize={14} color='#000' fontWeight={'$semibold'}>
-												{pic.companyUserPersonInCharge.user.name}
+												{pic.userPic.name}
 											</Text>
 											<Text fontSize={13} fontWeight={'$light'} color='#000'>
-												Employee · {pic.companyUserPersonInCharge.position.name}
+												Karyawan · {pic.userPic.name}
 											</Text>
 										</VStack>
 									</HStack>
