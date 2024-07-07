@@ -179,7 +179,7 @@ const ModalAddEmployee = memo(
 					<ModalContent>
 						<ModalHeader borderBottomWidth='$0'>
 							<VStack space='sm'>
-								<Heading size='md'>Add Employee</Heading>
+								<Heading size='md'>Tambah Karyawan</Heading>
 							</VStack>
 						</ModalHeader>
 						<ModalBody>

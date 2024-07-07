@@ -94,7 +94,7 @@ const EmployeeDetailScreen = memo(() => {
 									{route.params.user.name}
 								</Text>
 								<Text className='text-[#000] text-[12px] leading-normal font-light'>
-									Employee {route.params.isPic ? '· PIC' : ''} ·{' '}
+									Karyawan {route.params.isPic ? '· PIC' : ''} ·{' '}
 									{route.params.position.name}
 								</Text>
 							</View>

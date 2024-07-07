@@ -157,7 +157,7 @@ const EmployeeListScreen = memo(() => {
 														fontWeight={'$light'}
 														color='#000'
 													>
-														Employee · {employee.position.name}
+														Karyawan · {employee.position.name}
 													</Text>
 												</VStack>
 											</HStack>
@@ -187,7 +187,7 @@ const EmployeeListScreen = memo(() => {
 						}
 					}}
 				>
-					Add Employee
+					Tambah Karyawan
 				</BaseButton>
 			</HStack>
 

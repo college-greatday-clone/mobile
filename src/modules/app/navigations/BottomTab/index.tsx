@@ -71,27 +71,23 @@ const AppRootBottomTabNavigation = () => {
 				/>
 			)}
 
-			{[ERole.User, ERole.HRManager].includes(
-				authenticatedUserRole as ERole
-			) && (
-				<Tab.Screen
-					name={EAppBottomTabNavigation.REPORT}
-					component={ReportStackNavigation}
-					options={{
-						tabBarIconStyle: { marginTop: 5 },
-						tabBarIcon: ({ focused }) => (
-							<ClipboardMinus color={focused ? '#FE881A' : '#000'} size={20} />
-						),
-						tabBarLabel: ({ focused }) => (
-							<View flex={1} justifyContent='center' alignItems='center'>
-								<Text fontSize={12} color={focused ? '$primary400' : '#000'}>
-									Report
-								</Text>
-							</View>
-						)
-					}}
-				/>
-			)}
+			<Tab.Screen
+				name={EAppBottomTabNavigation.REPORT}
+				component={ReportStackNavigation}
+				options={{
+					tabBarIconStyle: { marginTop: 5 },
+					tabBarIcon: ({ focused }) => (
+						<ClipboardMinus color={focused ? '#FE881A' : '#000'} size={20} />
+					),
+					tabBarLabel: ({ focused }) => (
+						<View flex={1} justifyContent='center' alignItems='center'>
+							<Text fontSize={12} color={focused ? '$primary400' : '#000'}>
+								Report
+							</Text>
+						</View>
+					)
+				}}
+			/>
 
 			{(isHumanResource ||
 				[ERole.User, ERole.HRManager].includes(
@@ -115,8 +111,8 @@ const AppRootBottomTabNavigation = () => {
 					}}
 				/>
 			)}
-			{(authAuthenticatedUserIsPic ||
-				[''].includes(authenticatedUserRole as ERole)) && (
+
+			{authAuthenticatedUserIsPic && (
 				<Tab.Screen
 					name={EAppBottomTabNavigation.NOTIFICATION}
 					component={NotificationStackNavigation}

@@ -164,7 +164,7 @@ const NotificationListScreen = memo(() => {
 																fontSize={14}
 																fontWeight={'$normal'}
 															>
-																Employee -{' '}
+																Karyawan -{' '}
 																{
 																	attendanceApproval.attendance.user.position
 																		.name
@@ -175,7 +175,7 @@ const NotificationListScreen = memo(() => {
 																fontSize={14}
 																fontWeight={'$normal'}
 															>
-																Regular Office Hour [
+																Jam Kerja [
 																{renderWorkingHour(
 																	attendanceApproval.attendance.user
 																		.workingHour as EWorkingHour

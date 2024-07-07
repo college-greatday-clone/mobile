@@ -297,7 +297,7 @@ const ReportEntryScreen = memo(() => {
 															fontWeight={'$normal'}
 															numberOfLines={1}
 														>
-															Regular Office Hour [
+															Jam Kerja [
 															{renderWorkingHour(
 																authenticatedUserWorkingHour as EWorkingHour
 															)}
@@ -396,30 +396,33 @@ const ReportEntryScreen = memo(() => {
 														</VStack>
 													)}
 
-													<HStack
-														alignItems='center'
-														space='xs'
-														backgroundColor={'rgba(255, 0, 0, 0.10)'}
-														paddingHorizontal={10}
-														paddingVertical={5}
-														borderRadius={5}
-													>
-														<Image
-															source={WarningRedImage}
-															width={24}
-															height={24}
-															alt='Warning Late For Work'
-														/>
-														<Text fontSize={12} color='$red400'>
-															{attendance?.isLateClockIn &&
-																'Anda telat masuk (clock-in)'}
-															{attendance?.isLateClockIn &&
-																attendance?.isLateClockOut &&
-																' dan juga '}
-															{attendance?.isLateClockOut &&
-																'Anda terlalu cepat keluar (clock-out)'}
-														</Text>
-													</HStack>
+													{(attendance?.isLateClockIn ||
+														attendance?.isLateClockOut) && (
+														<HStack
+															alignItems='center'
+															space='xs'
+															backgroundColor={'rgba(255, 0, 0, 0.10)'}
+															paddingHorizontal={10}
+															paddingVertical={5}
+															borderRadius={5}
+														>
+															<Image
+																source={WarningRedImage}
+																width={24}
+																height={24}
+																alt='Warning Late For Work'
+															/>
+															<Text fontSize={12} color='$red400'>
+																{attendance?.isLateClockIn &&
+																	'Anda telat masuk (clock-in)'}
+																{attendance?.isLateClockIn &&
+																	attendance?.isLateClockOut &&
+																	' dan juga '}
+																{attendance?.isLateClockOut &&
+																	'Anda terlalu cepat keluar (clock-out)'}
+															</Text>
+														</HStack>
+													)}
 												</VStack>
 											</BaseBox>
 										</VStack>

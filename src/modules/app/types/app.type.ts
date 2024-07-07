@@ -32,6 +32,7 @@ export type TAttendanceApproval = {
 	attendance: TAttendance & {
 		user: {
 			id: string
+			name: string
 			workingHour: string
 			workType: string
 			position: {
